@@ -20,7 +20,8 @@ curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cryo
 
 # Install Icon
 curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/icon.png --silent --output "$HOME/.cryo_utilities/cryo-utilities.png"
-xdg-icon-resource install ~/.cryo_utilities/cryo-utilities.png --size 64
+cd ~/.cryo_utilities
+xdg-icon-resource install cryo-utilities.png --size 64
 
 # Create Desktop icons
 rm -rf ~/Desktop/CryoUtilitiesUninstall.desktop 2>/dev/null
