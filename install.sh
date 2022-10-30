@@ -19,7 +19,7 @@ mkdir -p "$HOME/.cryo_utilities" &>/dev/null
 curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cryo_utilities.sh --silent --output "$HOME/.cryo_utilities/cryo_utilities.sh"
 
 # Install Icon
-curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/icon.png --silent --output "$HOME/.cryo_utilities/cryo-cryo_utilities.png"
+curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/icon.png --silent --output "$HOME/.cryo_utilities/cryo-utilities.png"
 xdg-icon-resource install "$HOME/.cryo_utilities/cryo-utilities.png" --size 64 &>/dev/null
 
 # Create Desktop icons
