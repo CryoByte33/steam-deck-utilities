@@ -1,7 +1,7 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Name=Install Swap Resizer
-Exec=curl https://raw.githubusercontent.com/CryoByte33/steam-deck-swap-resizer/main/install.sh | bash -s --
+Name=Install CryoUtilities
+Exec=curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/install.sh | bash -s --
 Icon=steamdeck-gaming-return
 Terminal=true
 Type=Application
