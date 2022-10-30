@@ -1,5 +1,5 @@
 # steam-deck-utilities
-Scripts and Utilites to enhance the Steam Deck experience, particularly performance.
+Scripts and utilities to enhance the Steam Deck experience, particularly performance.
 
 **Current Functionality:**
 * Swap File Resizer
