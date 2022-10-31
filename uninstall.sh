@@ -10,5 +10,5 @@ if zenity --question --title="Disclaimer" --text="This script will uninstall Cry
     rm -rf ~/Desktop/CryoUtilities.desktop 2>/dev/null
 
     # Remove icon from KDE
-    xdg-icon-resource uninstall cryo-utilities
+    xdg-icon-resource uninstall cryo-utilities 2>/dev/null
 fi
