@@ -14,7 +14,7 @@ else
         zenity --error --title="Password Error" --text="Incorrect password provided, please run this command again and provide the correct password." --width=400 2> /dev/null
     else
         if zenity --question --title="Disclaimer" --text="This script was made by CryoByte33 to resize the swapfile on a Steam Deck.\n\n<b>Disclaimer: I am in no way responsible to damage done to any device this is executed on, all liability lies with the runner.</b>\n\nDo you accept these terms?" --width=600 2> /dev/null; then
-            echo "Debugging Information:"
+            echo -e "\nDebugging Information:"
             echo "----------------------"
             
             MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
