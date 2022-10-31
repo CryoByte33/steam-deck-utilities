@@ -80,7 +80,7 @@ else
             # Whether to manipulate the TRIM timer
             if zenity --question --title="Toggle TRIM?" --text="Would you like to enable or disable TRIM running on a schedule?\n\nCurrent value: $TRIM_STATUS\nRecommended: Enabled" --width=300 2> /dev/null; then
                 TRIM_CHOICE=$(zenity --list --title "TRIM Choice" --text "Would you like to enable or disable TRIM" --column="TRIM" "Enable" "Disable" --width=100 --height=300 2> /dev/null)
-                if [ "$TRIM_CHOICE" -eq "Enable" ]; then
+                if [ "$TRIM_CHOICE" == "Enable" ]; then
                     sudo systemctl enable --now fstrim.timer &>/dev/null
                 else
                     sudo systemctl disable fstrim.timer &>/dev/null
