@@ -83,7 +83,7 @@ else
                 if [ "$TRIM_CHOICE" = "Enable" ]; then
                     sudo systemctl enable --now fstrim.timer &>/dev/null
                 else
-                    sudo systemctl disable fstrim.timer &>/dev/null
+                    sudo systemctl disable --now fstrim.timer &>/dev/null
                 fi
             fi
             # Whether to execute TRIM immediately
