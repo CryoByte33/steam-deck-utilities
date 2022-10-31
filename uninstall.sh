@@ -8,6 +8,7 @@ if zenity --question --title="Disclaimer" --text="This script will uninstall Cry
     # Remove Desktop icons
     rm -rf ~/Desktop/CryoUtilitiesUninstall.desktop 2>/dev/null
     rm -rf ~/Desktop/CryoUtilities.desktop 2>/dev/null
+    rm -rf ~/Desktop/UpdateCryoUtilities.desktop 2>/dev/null
 
     # Remove icon from KDE
     xdg-icon-resource uninstall cryo-utilities 2>/dev/null
