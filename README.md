@@ -1,4 +1,4 @@
-# steam-deck-utilities
+# CryoUtilities
 Scripts and utilities to enhance the Steam Deck experience, particularly performance.
 
 **Current Functionality:**
