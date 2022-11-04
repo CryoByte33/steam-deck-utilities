@@ -14,11 +14,15 @@ else
         zenity --error --title="Password Error" --text="Incorrect password provided, please run this command again and provide the correct password." --width=400 2> /dev/null
     else
         # Thank you to ssorgatem for the dynamic swapfile location code.
+        # Note: The swapfile recreation does not currently support BTRFS
         SWAPFILE=$(swapon | grep swapfile | cut -d" " -f1)
         if [ ! -f "$SWAPFILE" ]; then
-            echo "$SWAPFILE does not exist."
-            zenity --error --title="Swapfile not found" --text="The file $SWAPFILE does not exist" --width=400 2> /dev/null
-            exit 1
+            echo "Swapfile does not exist, generating a default-sized file where it should be located..."
+            sudo dd if=/dev/zero of=/home/swapfile bs=1G count=1 status=none
+            sudo chmod 0600 /home/swapfile 
+            sudo mkswap /home/swapfile 
+            sudo swapon /home/swapfile
+            SWAPFILE="/home/swapfile"
         fi
         if zenity --question --title="Disclaimer" --text="This script was made by CryoByte33 to resize the swapfile on a Steam Deck.\n\n<b>Disclaimer: I am in no way responsible to damage done to any device this is executed on, all liability lies with the runner.</b>\n\nDo you accept these terms?" --width=600 2> /dev/null; then
             echo -e "\nDebugging Information:"
