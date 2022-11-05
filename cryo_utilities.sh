@@ -85,7 +85,7 @@ if zenity --question --title="Disclaimer" --text="This script was made by CryoBy
         echo "-------------------"
         sudo sysctl -w "vm.swappiness=$SWAPPINESS_ANSWER"
         if [ "$SWAPPINESS_ANSWER" -eq "100" ]; then
-            sudo rm /etc/sysctl.d/zzz-custom-swappiness.conf
+            sudo rm -f /etc/sysctl.d/zzz-custom-swappiness.conf
         else
             echo "vm.swappiness=$SWAPPINESS_ANSWER" | sudo tee /etc/sysctl.d/zzz-custom-swappiness.conf
         fi
