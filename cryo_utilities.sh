@@ -19,8 +19,8 @@ else
         if [ ! -f "$SWAPFILE" ]; then
             echo "Swapfile does not exist, generating a default-sized file where it should be located..."
             sudo dd if=/dev/zero of=/home/swapfile bs=1G count=1 status=none
-            sudo chmod 0600 /home/swapfile 
-            sudo mkswap /home/swapfile 
+            sudo chmod 0600 /home/swapfile
+            sudo mkswap /home/swapfile
             sudo swapon /home/swapfile
             SWAPFILE="/home/swapfile"
         fi
@@ -78,7 +78,7 @@ else
             # Swappiness Change
             # Thank you to protosam for the idea and some of the code here.
             if zenity --question --title="Change Swappiness?" --text="Would you like to change swappiness?\n\nCurrent value: $CURRENT_VM_SWAPPINESS\nRecommended: 1" --width=300 2> /dev/null; then
-                SWAPPINESS_ANSWER=$(zenity --list --title "Swappiness Value" --text "What value would you like to use for swappiness? (Default: 100)" --column="vm.swappiness" "100" "50" "30" "1" --width=100 --height=300 2> /dev/null)
+                SWAPPINESS_ANSWER=$(zenity --list --title "Swappiness Value" --text "What value would you like to use for swappiness? (Default: 100)" --column="vm.swappiness" "1" "10" "25" "50" "70" "100" --width=100 --height=300 2> /dev/null)
                 echo -e "\nSwappiness Debug:"
                 echo "-------------------"
                 sudo sysctl -w "vm.swappiness=$SWAPPINESS_ANSWER"
@@ -107,7 +107,7 @@ else
                     sudo fstrim -av
                     echo 100
                     echo "# TRIM Complete!"
-                ) | zenity --title "Resizing Swap File" --progress --no-cancel --width=800 2> /dev/null
+                ) | zenity --title "Running TRIM" --progress --no-cancel --width=800 2> /dev/null
             fi
         else
             zenity --error --title="Terms Denied" --text="Terms were denied, cannot proceed." --width=300 2> /dev/null
