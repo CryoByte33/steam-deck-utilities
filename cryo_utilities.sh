@@ -29,7 +29,7 @@ else
             echo "----------------------"
             
             MACHINE_CURRENT_SWAP_SIZE=$(ls -l "$SWAPFILE" | awk '{print $5}')
-            CURRENT_SWAP_SIZE=$(( $MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
+            CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
             CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
             # Check for current TRIM status
             systemctl list-timers | grep fstrim &>/dev/null
@@ -44,8 +44,8 @@ else
                 AVAILABLE=$(df --output="avail" -lh --sync /home | grep -v "Avail" | sed -e 's/^[ \t]*//')
                 MACHINE_AVAILABLE=$(( $(df --output="avail" -l --sync /home | grep -v "Avail" | sed -e 's/^[ \t]*//') * 1024 ))
                 SIZE=$(zenity --list --radiolist --text "You have $AVAILABLE space available, what size would you like the swap file (in GB)?" --hide-header --column "Selected" --column "Size" TRUE "1" FALSE "2" FALSE "4" FALSE "8" FALSE "12" FALSE "16" FALSE "32" --height=400 2> /dev/null)
-                MACHINE_SIZE=$(( $SIZE * 1024 * 1024 ))
-                TOTAL_AVAILABLE=$(( $MACHINE_AVAILABLE + $MACHINE_CURRENT_SWAP_SIZE ))
+                MACHINE_SIZE=$(( SIZE * 1024 * 1024 ))
+                TOTAL_AVAILABLE=$(( MACHINE_AVAILABLE + MACHINE_CURRENT_SWAP_SIZE ))
                 echo "Swap Debug:"
                 echo "-----------"
                 echo "Bytes Available: $MACHINE_AVAILABLE"
@@ -60,7 +60,7 @@ else
                         sudo swapoff -a
                         echo 25
                         echo "# Creating new $SIZE GB swapfile (be patient, this can take between 10 seconds and 30 minutes)..."
-                        sudo dd if=/dev/zero of="$SWAPFILE" bs=1G count=$SIZE status=none
+                        sudo dd if=/dev/zero of="$SWAPFILE" bs=1G count="$SIZE" status=none
                         echo 50
                         echo "# Setting permissions on swapfile..."
                         sudo chmod 0600 "$SWAPFILE"
