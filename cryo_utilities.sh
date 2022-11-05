@@ -109,7 +109,7 @@ if zenity --question --title="Run TRIM Now?" --text="Would you like to run TRIM 
     (
         echo 50
         echo "# Running TRIM, please be patient (this can take up to 30 minutes)..."
-        sudo fstrim -av
+        sudo fstrim -v /home
         echo 100
         echo "# TRIM Complete!"
     ) | zenity --title "Running TRIM" --progress --no-cancel --width=800 2> /dev/null

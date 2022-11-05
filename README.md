@@ -1,6 +1,10 @@
 # CryoUtilities
 Scripts and utilities to enhance the Steam Deck experience, particularly performance.
 
+**Note:** Immediate TRIM in microSDs is currently disabled because of Valve's statement here: https://www.theverge.com/23415294/valve-steam-deck-microsd-card-slow-download-speed-fix-how-to
+
+TRIM will still be run on /home in the meantime!
+
 **Current Functionality:**
 * Swap File Resizer
 * Swappiness Changer
