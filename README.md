@@ -9,6 +9,11 @@ Scripts and utilities to enhance the Steam Deck experience, particularly perform
 
 Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/channel/UCJ2wc4hCWI8bEki48Zv45fQ) for examples on how to use this and what performance you can expect.
 
+## Support Me
+[![Watch me on YouTube:](https://img.shields.io/youtube/channel/subscribers/UCJ2wc4hCWI8bEki48Zv45fQ?color=%23FF0000&label=Subscribe%20on%20YouTube&style=flat-square)](https://www.youtube.com/@cryobyte33)
+
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dcryobyte33%26type%3Dpatrons&style=flat)](https://patreon.com/cryobyte33)
+
 ## Usage
 **NOTE:** This **REQUIRES** a password set on the Steam Deck. That can be done with the `passwd` command.
 
