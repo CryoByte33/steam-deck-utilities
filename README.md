@@ -32,7 +32,7 @@ chmod +x cryo_utilities.sh
 ```
 
 ## Upgrade
-Double-clock the "Update CryoUtilities" icon on the desktop.
+Double-click the "Update CryoUtilities" icon on the desktop.
 
 ## Uninstall
 Double-click the "Uninstall CryoUtilities" icon on the desktop.
