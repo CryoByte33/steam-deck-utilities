@@ -10,7 +10,6 @@ export PATH="$HOME/.cryo_utilities:$PATH"
 show_disclaimer() {
     DISCLAIMER_TEXT="This script was made by CryoByte33 to resize the swapfile on a Steam Deck.\n\n<b>Disclaimer: I am in no way responsible to damage done to any device this is executed on, all liability lies with the runner.</b>\n\nDo you accept these terms?"
 
-
     if [ -z "$SSH_TTY" ]; then
         zenity --question --title="Disclaimer" --text="$DISCLAIMER_TEXT" --width=600 2> /dev/null
     else
