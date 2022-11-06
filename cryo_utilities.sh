@@ -19,21 +19,10 @@ if [[ $ans == 1 ]]; then
     zenity --error --title="Password Error" --text="Incorrect password provided, please run this command again and provide the correct password." --width=400 2> /dev/null
     exit 1
 fi
-# Thank you to ssorgatem for the dynamic swapfile location code.
-# Note: The swapfile recreation does not currently support BTRFS
-SWAPFILE=$(swapon | grep swapfile | cut -d" " -f1)
-if [ ! -f "$SWAPFILE" ]; then
-    echo "Swapfile does not exist, generating a default-sized file where it should be located..."
-    sudo dd if=/dev/zero of=/home/swapfile bs=1G count=1 status=none
-    sudo chmod 0600 /home/swapfile
-    sudo mkswap /home/swapfile
-    sudo swapon /home/swapfile
-    SWAPFILE="/home/swapfile"
-fi
 echo -e "\nDebugging Information:"
 echo "----------------------"
 
-MACHINE_CURRENT_SWAP_SIZE=$(ls -l "$SWAPFILE" | awk '{print $5}')
+MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
 CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
 CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
 # Check for current TRIM status
@@ -65,16 +54,16 @@ if zenity --question --title="Change Swap Size?" --text="Do you want to change t
             sudo swapoff -a
             echo 25
             echo "# Creating new $SIZE GB swapfile (be patient, this can take between 10 seconds and 30 minutes)..."
-            sudo dd if=/dev/zero of="$SWAPFILE" bs=1G count="$SIZE" status=none
+            sudo dd if=/dev/zero of=/home/swapfile bs=1G count="$SIZE" status=none
             echo 50
             echo "# Setting permissions on swapfile..."
-            sudo chmod 0600 "$SWAPFILE"
+            sudo chmod 0600 /home/swapfile
             echo 75
             echo "# Initializing new swapfile..."
-            sudo mkswap "$SWAPFILE"  
-            sudo swapon "$SWAPFILE" 
+            sudo mkswap /home/swapfile  
+            sudo swapon /home/swapfile 
             echo 100
-            echo "# Process completed! You can verify the file is resized by doing 'ls -lash $SWAPFILE' or using 'swapon -s'."
+            echo "# Process completed! You can verify the file is resized by doing 'ls -lash /home/swapfile' or using 'swapon -s'."
         ) | zenity --title "Resizing Swap File" --progress --no-cancel --width=800 2> /dev/null
     else
         zenity --error --title="Invalid Size" --text="You selected a size greater than the space you have available, cannot proceed." --width=500 2> /dev/null
