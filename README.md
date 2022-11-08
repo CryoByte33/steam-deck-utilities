@@ -46,6 +46,14 @@ Double-click the "Update CryoUtilities" icon on the desktop.
 ## Uninstall
 Double-click the "Uninstall CryoUtilities" icon on the desktop.
 
+## Revert To Default Settings
+To revert to the Steam Deck defaults, do the following:
+* 1GB Swap File
+* 100 Swappiness
+* Disable TRIM on schedule
+
+After choosing these options, the Deck will be identical to an unmodified version.
+
 ## Common Questions
 #### What games benefit from the swap fix?
 Any game that uses a combined 16GB for RAM and VRAM will likely benefit from the swap fix. How much the swap fix helps will depend on a few factors including asset compression, asset size, and churn of data in memory.
@@ -80,6 +88,11 @@ Yes, the read and write speeds both make a difference in the speed of swapping, 
 
 In general, the larger the SSD the faster it is, but there's a lot more to it than that. But that does mean that by upgrading your SSD size you could upgrade the performance during swap scenarios. Something to keep in mind, but it will likely be a very small difference.
 
+#### Do these fixes affect battery life?
+This doesn't directly affect either the fan speeds or battery life, but it could lift a bottleneck and allow the CPU and GPU to work harder, thus raising fan speeds or lowering battery life by technicality. 
+
+#### Are there any downsides to these fixes?
+Not that I'm aware of. At worst, performance breaks even but still extends SSD life.
 
 ## Troubleshooting
 ### Right-clicking the link to save it doesn't open a dialog box
