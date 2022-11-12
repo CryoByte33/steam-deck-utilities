@@ -25,7 +25,7 @@ echo "----------------------"
 MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
 CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
 CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
-STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed -i 's/VERSION_ID=//g')
+STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed 's/VERSION_ID=//g')
 
 # Swapfile Size Changer
 if zenity --question --title="Change Swap Size?" --text="Do you want to change the swap file size?\n\nCurrent Size: $CURRENT_SWAP_SIZE\nRecommended: 16" --width=300 2> /dev/null; then
