@@ -3,7 +3,9 @@ Scripts and utilities to enhance the Steam Deck experience, particularly perform
 
 ## Update
 As of the news of SteamOS 3.4 containing TRIM support, the script has been updated.
+
 **If you are on SteamOS lower than 3.4**, you will still get an option to enable my TRIM-on schedule.
+
 **If you are on SteamOS 3.4 or higher**, my automatic TRIM will be disabled automatically.
 
 **Immediate TRIM is still an option and runs on /home only**
