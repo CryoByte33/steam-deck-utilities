@@ -3,7 +3,7 @@
 # I am in no way responsible to damage done to any device this
 # is executed on, all liability lies with the runner.
 
-if !(zenity --question --title="Disclaimer" --text="This script was made by CryoByte33 to resize the swapfile on a Steam Deck.\n\n<b>Disclaimer: I am in no way responsible to damage done to any device this is executed on, all liability lies with the runner.</b>\n\nDo you accept these terms?" --width=600 2> /dev/null); then
+if ! (zenity --question --title="Disclaimer" --text="This script was made by CryoByte33 to resize the swapfile on a Steam Deck.\n\n<b>Disclaimer: I am in no way responsible to damage done to any device this is executed on, all liability lies with the runner.</b>\n\nDo you accept these terms?" --width=600 2> /dev/null); then
     zenity --error --title="Terms Denied" --text="Terms were denied, cannot proceed." --width=300 2> /dev/null
     exit 1
 fi
@@ -25,13 +25,7 @@ echo "----------------------"
 MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
 CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
 CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
-# Check for current TRIM status
-systemctl list-timers | grep fstrim &>/dev/null
-if [ "$?" == "1" ]; then
-    TRIM_STATUS="Disabled"
-else
-    TRIM_STATUS="Enabled"
-fi
+STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed -i 's/VERSION_ID=//g')
 
 # Swapfile Size Changer
 if zenity --question --title="Change Swap Size?" --text="Do you want to change the swap file size?\n\nCurrent Size: $CURRENT_SWAP_SIZE\nRecommended: 16" --width=300 2> /dev/null; then
@@ -83,14 +77,28 @@ if zenity --question --title="Change Swappiness?" --text="Would you like to chan
     fi
 fi
 # Whether to manipulate the TRIM timer
-if zenity --question --title="Toggle TRIM?" --text="Would you like to enable or disable TRIM running on a schedule?\n\nCurrent value: $TRIM_STATUS\nRecommended: Enabled" --width=300 2> /dev/null; then
-    TRIM_CHOICE=$(zenity --list --title "TRIM Choice" --text "Would you like to enable or disable TRIM" --column="TRIM" "Enable" "Disable" --width=100 --height=300 2> /dev/null)
-    if [ "$TRIM_CHOICE" = "Enable" ]; then
-        sudo systemctl enable --now fstrim.timer &>/dev/null
+if (( $(echo "$STEAMOS_VERSION 3.4" | awk '{print ($1 > $2)}') )); then
+    echo "SteamOS version with no native TRIM support, providing schedule option..."
+    # Check for current TRIM status on SteamOS versions lower than 3.4
+    systemctl list-timers | grep fstrim &>/dev/null
+    if [ "$?" == "1" ]; then
+        TRIM_STATUS="Disabled"
     else
-        sudo systemctl disable --now fstrim.timer &>/dev/null
+        TRIM_STATUS="Enabled"
     fi
+    if zenity --question --title="Toggle TRIM?" --text="Would you like to enable or disable TRIM running on a schedule?\n\nCurrent value: $TRIM_STATUS\nRecommended: Enabled" --width=300 2> /dev/null; then
+        TRIM_CHOICE=$(zenity --list --title "TRIM Choice" --text "Would you like to enable or disable TRIM" --column="TRIM" "Enable" "Disable" --width=100 --height=300 2> /dev/null)
+        if [ "$TRIM_CHOICE" = "Enable" ]; then
+            sudo systemctl enable --now fstrim.timer &>/dev/null
+        else
+            sudo systemctl disable --now fstrim.timer &>/dev/null
+        fi
+    fi
+else
+    echo "SteamOS version with native TRIM support, disabling custom schedule..."
+    sudo systemctl disable --now fstrim.timer &>/dev/null
 fi
+
 # Whether to execute TRIM immediately
 if zenity --question --title="Run TRIM Now?" --text="Would you like to run TRIM right now?\n\n<b>Note:</b> This can take up to 30 minutes or so." --width=300 2> /dev/null; then
     echo -e "\nTRIM Debug:"

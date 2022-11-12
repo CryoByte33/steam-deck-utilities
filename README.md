@@ -1,14 +1,17 @@
 # CryoUtilities
 Scripts and utilities to enhance the Steam Deck experience, particularly performance.
 
-**Note:** Immediate TRIM in microSDs is currently disabled because of Valve's statement here: https://www.theverge.com/23415294/valve-steam-deck-microsd-card-slow-download-speed-fix-how-to
+## Update
+As of the news of SteamOS 3.4 containing TRIM support, the script has been updated.
+**If you are on SteamOS lower than 3.4**, you will still get an option to enable my TRIM-on schedule.
+**If you are on SteamOS 3.4 or higher**, my automatic TRIM will be disabled automatically.
 
-TRIM will still be run on /home in the meantime!
+**Immediate TRIM is still an option and runs on /home only**
 
 **Current Functionality:**
 * Swap File Resizer
 * Swappiness Changer
-* Enable/Disable TRIM
+* Enable/Disable TRIM on schedule (SteamOS versions lower than 3.4 ONLY)
 * Immediately run TRIM on all mounted volumes
 
 Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/channel/UCJ2wc4hCWI8bEki48Zv45fQ) for examples on how to use this and what performance you can expect.
@@ -50,7 +53,7 @@ Double-click the "Uninstall CryoUtilities" icon on the desktop.
 To revert to the Steam Deck defaults, do the following:
 * 1GB Swap File
 * 100 Swappiness
-* Disable TRIM on schedule
+* Disable TRIM on schedule (if applicable)
 
 After choosing these options, the Deck will be identical to an unmodified version.
 
@@ -93,6 +96,9 @@ This doesn't directly affect either the fan speeds or battery life, but it could
 
 #### Are there any downsides to these fixes?
 Not that I'm aware of. At worst, performance breaks even but still extends SSD life.
+
+#### Does this script support SteamOS 3.4+'s TRIM?
+Yes, it automatically disabled my TRIM-on-schedule if it detects a version 3.4 or higher. The Immediate TRIM option is still valuable and supported in all SteamOS versions.
 
 ## Troubleshooting
 ### Right-clicking the link to save it doesn't open a dialog box
