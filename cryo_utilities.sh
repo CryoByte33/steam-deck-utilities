@@ -77,7 +77,7 @@ if zenity --question --title="Change Swappiness?" --text="Would you like to chan
     fi
 fi
 # Whether to manipulate the TRIM timer
-if (( $(echo "$STEAMOS_VERSION 3.4" | awk '{print ($1 > $2)}') )); then
+if (( $(echo "$STEAMOS_VERSION 3.4" | awk '{print ($1 < $2)}') )); then
     echo "SteamOS version with no native TRIM support, providing schedule option..."
     # Check for current TRIM status on SteamOS versions lower than 3.4
     systemctl list-timers | grep fstrim &>/dev/null
