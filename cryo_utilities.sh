@@ -8,7 +8,7 @@ if ! (zenity --question --title="Disclaimer" --text="This script was made by Cry
     exit 1
 fi
 hasPass=$(passwd -S "$USER" | awk -F " " '{print $2}')
-if [[ ! $hasPass == "P" ]]; then
+if [[ $hasPass != "P" ]]; then
     zenity --error --title="Password Error" --text="Password is not set, please set one in the terminal with the <b>passwd</b> command, then run this again." --width=400 2> /dev/null
     exit 1
 fi
