@@ -8,7 +8,7 @@ if ! (zenity --question --title="Disclaimer" --text="This script was made by Cry
     exit 1
 fi
 hasPass=$(passwd -S "$USER" | awk -F " " '{print $2}')
-if [[ ! $hasPass == "P" ]]; then
+if [[ $hasPass != "P" ]]; then
     zenity --error --title="Password Error" --text="Password is not set, please set one in the terminal with the <b>passwd</b> command, then run this again." --width=400 2> /dev/null
     exit 1
 fi
@@ -22,7 +22,7 @@ fi
 echo -e "\nDebugging Information:"
 echo "----------------------"
 
-MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
+MACHINE_CURRENT_SWAP_SIZE=$(stat --format='%s' /home/swapfile)
 CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
 CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
 STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed 's/VERSION_ID=//g')
