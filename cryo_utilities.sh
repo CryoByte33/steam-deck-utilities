@@ -22,7 +22,7 @@ fi
 echo -e "\nDebugging Information:"
 echo "----------------------"
 
-MACHINE_CURRENT_SWAP_SIZE=$(ls -l /home/swapfile | awk '{print $5}')
+MACHINE_CURRENT_SWAP_SIZE=$(stat --format='%s' /home/swapfile)
 CURRENT_SWAP_SIZE=$(( MACHINE_CURRENT_SWAP_SIZE / 1024 / 1024 / 1024 ))
 CURRENT_VM_SWAPPINESS=$(sysctl vm.swappiness | awk '{print $3}')
 STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed 's/VERSION_ID=//g')
