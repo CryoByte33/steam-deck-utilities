@@ -31,7 +31,7 @@ STEAMOS_VERSION=$(sudo cat /etc/os-release | grep VERSION_ID | sed 's/VERSION_ID
 if zenity --question --title="Change Swap Size?" --text="Do you want to change the swap file size?\n\nCurrent Size: $CURRENT_SWAP_SIZE\nRecommended: 16" --width=300 2> /dev/null; then
     AVAILABLE=$(df --output="avail" -lh --sync /home | grep -v "Avail" | sed -e 's/^[ \t]*//')
     MACHINE_AVAILABLE=$(( $(df --output="avail" -l --sync /home | grep -v "Avail" | sed -e 's/^[ \t]*//') * 1024 ))
-    SIZE=$(zenity --list --radiolist --text "You have $AVAILABLE space available, what size would you like the swap file (in GB)?" --hide-header --column "Selected" --column "Size" TRUE "1" FALSE "2" FALSE "4" FALSE "8" FALSE "12" FALSE "16" FALSE "32" --height=400 2> /dev/null)
+    SIZE=$(zenity --list --radiolist --text "You have $AVAILABLE space available, what size would you like the swap file (in GB)?" --hide-header --column "Selected" --column "Size" TRUE "1" FALSE "2" FALSE "4" FALSE "8" FALSE "12" FALSE "16" FALSE "24" FALSE "32" --height=400 2> /dev/null)
     MACHINE_SIZE=$(( SIZE * 1024 * 1024 ))
     TOTAL_AVAILABLE=$(( MACHINE_AVAILABLE + MACHINE_CURRENT_SWAP_SIZE ))
     echo "Swap Debug:"
