@@ -30,7 +30,9 @@ After installation, just run the "CryoUtilities" icon on the desktop.
 
 ## Install
 ### Easy
-Download InstallCryoUtilities.desktop from this repository with [this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop) on your Steam Deck, then run it. (Right click and save file)
+Download InstallCryoUtilities.desktop from this repository with [this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop) on your Steam Deck, then run it. (Right click and save file.)
+
+**NOTE:** Do NOT set the downloaded desktop file as executable! This will cause the installation to fail. 
 
 This will install a script and create a few desktop icons for the swap resizer tool.
 
