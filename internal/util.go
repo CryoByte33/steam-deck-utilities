@@ -4,11 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/widget"
-	"github.com/moby/sys/mountinfo"
-	"golang.org/x/sys/unix"
 	"io"
 	"log"
 	"os"
@@ -16,14 +11,18 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/widget"
+	"github.com/moby/sys/mountinfo"
+	"golang.org/x/sys/unix"
 )
 
 type Config struct {
 	App                           fyne.App
 	InfoLog                       *log.Logger
 	ErrorLog                      *log.Logger
-	UserPassword                  string
-	SwapFileLocation              string
 	SwapText                      *canvas.Text
 	SwappinessText                *canvas.Text
 	HugePagesText                 *canvas.Text
@@ -45,6 +44,8 @@ type Config struct {
 	CompactionProactivenessButton *widget.Button
 	DefragButton                  *widget.Button
 	PageLockUnfairnessButton      *widget.Button
+	UserPassword                  string
+	SwapFileLocation              string
 }
 
 var CryoUtils Config
@@ -62,7 +63,7 @@ func getFreeSpace(path string) (int64, error) {
 
 func getDirectorySize(path string) int64 {
 	var size int64
-	_ = filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(path, func(_ string, info os.FileInfo, _ error) error {
 		if !info.IsDir() {
 			size += info.Size()
 		}
@@ -124,10 +125,13 @@ func doesFileExist(path string) bool {
 }
 
 func isSubPath(parent string, sub string) bool {
-	if strings.HasPrefix(sub, parent) {
-		return true
+	subFolds := filepath.SplitList(sub)
+	for i, fold := range filepath.SplitList(parent) {
+		if subFolds[i] != fold {
+			return false
+		}
 	}
-	return false
+	return true
 }
 
 // Write a file with a given string
@@ -144,12 +148,7 @@ func writeFile(path string, contents string) error {
 		return err
 	}
 
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			CryoUtils.ErrorLog.Println(err)
-		}
-	}(f)
+	defer f.Close()
 
 	_, err = f.WriteString(contents)
 	if err != nil {
@@ -189,8 +188,8 @@ func getListOfDataAllDataLocations() ([]string, error) {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
 			possibleLocations = append(possibleLocations, SteamDataRoot)
 		} else {
-			compat := fmt.Sprintf("%s/%s", drives[x], ExternalCompatRoot)
-			shader := fmt.Sprintf("%s/%s", drives[x], ExternalShaderRoot)
+			compat := filepath.Join(drives[x], ExternalCompatRoot)
+			shader := filepath.Join(drives[x], ExternalShaderRoot)
 			possibleLocations = append(possibleLocations, compat)
 			possibleLocations = append(possibleLocations, shader)
 		}

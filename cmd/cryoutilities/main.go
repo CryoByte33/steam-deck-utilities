@@ -4,27 +4,23 @@ import (
 	"context"
 	"cryoutilities/internal"
 	"errors"
-	"github.com/cristalhq/acmd"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/cristalhq/acmd"
 )
 
 func main() {
 	// Delete old log file
-	_ = os.Remove(internal.LogFilePath)
+	os.Remove(internal.LogFilePath)
 	// Create a log file
 	logFile, err := os.OpenFile(internal.LogFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer func(logFile *os.File) {
-		err := logFile.Close()
-		if err != nil {
-
-		}
-	}(logFile)
+	defer logFile.Close()
 	log.SetOutput(logFile)
 
 	// Create loggers
@@ -39,7 +35,7 @@ func main() {
 		{
 			Name:        "gui",
 			Description: "Run in GUI mode",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(context.Context, []string) error {
 				internal.InitUI()
 				return nil
 			},
@@ -47,7 +43,7 @@ func main() {
 		{
 			Name:        "swap",
 			Description: "Change swap file size in increments of 1GB.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				internal.CryoUtils.InfoLog.Println("Starting swap file resize...")
 				size, err := strconv.Atoi(args[0])
 				if err != nil {
@@ -64,7 +60,7 @@ func main() {
 		{
 			Name:        "swappiness",
 			Description: "Change swappiness to the specified value 0-200.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				internal.CryoUtils.InfoLog.Println("Starting swappiness change...")
 				swappiness := args[0]
 				swappinessInt, err := strconv.Atoi(swappiness)
@@ -82,7 +78,7 @@ func main() {
 		{
 			Name:        "hugepages",
 			Description: "Enable or disable hugepages. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Enabled",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				arg := strings.ToLower(args[0])
 				if arg == "true" || arg == "enable" {
 					internal.CryoUtils.InfoLog.Println("Enabling HugePages...")
@@ -105,7 +101,7 @@ func main() {
 		{
 			Name:        "compaction_proactiveness",
 			Description: "Set or revert compaction proactiveness. Accepts 'recommended' or 'stock'.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				arg := strings.ToLower(args[0])
 				if arg == "recommended" {
 					internal.CryoUtils.InfoLog.Println("Setting Compaction Proactiveness...")
@@ -128,7 +124,7 @@ func main() {
 		{
 			Name:        "defrag",
 			Description: "Enable or disable hugepage defrag. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Disabled",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				arg := strings.ToLower(args[0])
 				if arg == "true" || arg == "enable" {
 					internal.CryoUtils.InfoLog.Println("Enabling HugePAge Defrag...")
@@ -151,7 +147,7 @@ func main() {
 		{
 			Name:        "page_lock_unfairness",
 			Description: "Set or revert page lock unfairness. Accepts 'recommended' or 'stock'.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				arg := strings.ToLower(args[0])
 				if arg == "recommended" {
 					internal.CryoUtils.InfoLog.Println("Setting Page Lock Unfairness...")
@@ -174,7 +170,7 @@ func main() {
 		{
 			Name:        "shmem",
 			Description: "Enable or disable shared memory. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Enabled",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(_ context.Context, args []string) error {
 				arg := strings.ToLower(args[0])
 				if arg == "true" || arg == "enable" {
 					internal.CryoUtils.InfoLog.Println("Setting Shared Memory...")
@@ -197,7 +193,7 @@ func main() {
 		{
 			Name:        "recommended",
 			Description: "Set all values to Cryo's recommendations.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(context.Context, []string) error {
 				err := internal.UseRecommendedSettings()
 				if err != nil {
 					return err
@@ -208,7 +204,7 @@ func main() {
 		{
 			Name:        "stock",
 			Description: "Set all values to Valve defaults.",
-			ExecFunc: func(ctx context.Context, args []string) error {
+			ExecFunc: func(context.Context, []string) error {
 				err := internal.UseStockSettings()
 				if err != nil {
 					return err

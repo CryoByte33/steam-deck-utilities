@@ -10,8 +10,8 @@ import (
 type AppResponse struct {
 	Applist struct {
 		Apps []struct {
-			Appid int    `json:"appid"`
 			Name  string `json:"name"`
+			Appid int    `json:"appid"`
 		} `json:"apps"`
 	} `json:"applist"`
 }
@@ -36,12 +36,7 @@ func querySteamAPI() (AppResponse, error) {
 	}
 
 	if res.Body != nil {
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(res.Body)
+		defer res.Body.Close()
 	}
 
 	body, err := io.ReadAll(res.Body)

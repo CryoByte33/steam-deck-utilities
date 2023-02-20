@@ -51,7 +51,8 @@ func UseRecommendedSettings() error {
 	}
 	if availableSpace < RecommendedSwapSizeBytes {
 		size := 1
-		availableSizes, err := getAvailableSwapSizes()
+		var availableSizes []string
+		availableSizes, err = getAvailableSwapSizes()
 		if err != nil {
 			return err
 		}
