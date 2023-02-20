@@ -138,7 +138,7 @@ func isSubPath(parent string, sub string) bool {
 func writeFile(path string, contents string) error {
 	CryoUtils.InfoLog.Println("Writing", path)
 
-	tempPath := fmt.Sprintf("%s/temp.txt", InstallDirectory)
+	tempPath := filepath.Join(InstallDirectory, "temp.txt")
 	// Try to remove tempfile just in case it exists for some reason
 	_ = removeFile(tempPath)
 	// Write to the CU install directory to avoid permissions issues
@@ -246,7 +246,7 @@ func getUnitStatus(param string) (string, error) {
 }
 
 func writeUnitFile(param string, value string) error {
-	path := fmt.Sprintf("%s/%s.conf", TmpFilesRoot, param)
+	path := filepath.Join(TmpFilesRoot, param+".conf")
 	CryoUtils.InfoLog.Println("Writing", value, "to", path, "to preserve", param, "setting...")
 	contents := strings.ReplaceAll(TemplateUnitFile, "PARAM", UnitMatrix[param])
 	contents = strings.ReplaceAll(contents, "VALUE", value)
@@ -259,7 +259,7 @@ func writeUnitFile(param string, value string) error {
 }
 
 func removeUnitFile(param string) error {
-	path := fmt.Sprintf("%s/%s.conf", TmpFilesRoot, param)
+	path := filepath.Join(TmpFilesRoot, param+".conf")
 	CryoUtils.InfoLog.Println("Removing", path, "to revert", param, "setting...")
 	err := removeFile(path)
 	if err != nil {

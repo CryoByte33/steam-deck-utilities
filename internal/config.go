@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"fmt"
 	"image/color"
+	"path/filepath"
 )
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
@@ -12,7 +12,7 @@ var CurrentVersionNumber = "2.0.0"
 var InstallDirectory = "/home/deck/.cryo_utilities"
 
 // LogFilePath Location of the log file
-var LogFilePath = fmt.Sprintf("%s/cryoutilities.log", InstallDirectory)
+var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
 
 //////////////////////////
 // Recommended Settings //
@@ -118,19 +118,19 @@ var MountDirectory = "/run/media"
 var SteamDataRoot = "/home/deck/.local/share/Steam"
 
 // SteamCompatRoot Generates the full path of the compatdata folder, on SSD
-var SteamCompatRoot = fmt.Sprintf("%s/steamapps/compatdata", SteamDataRoot)
+var SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")
 
 // SteamShaderRoot Generates the full path of the shadercache folder, on SSD
-var SteamShaderRoot = fmt.Sprintf("%s/steamapps/shadercache", SteamDataRoot)
+var SteamShaderRoot = filepath.Join(SteamDataRoot, "steamapps/shadercache")
 
 // ExternalDataRoot The location where I'll keep compatdata and shadercache on microSD cards
 var ExternalDataRoot = "cryoutilities_steam_data"
 
 // ExternalCompatRoot Generates the full path of the compatdata folder, on microSD
-var ExternalCompatRoot = fmt.Sprintf("%s/compatdata", ExternalDataRoot)
+var ExternalCompatRoot = filepath.Join(ExternalDataRoot, "compatdata")
 
 // ExternalShaderRoot Generates the full path of the shadercache folder, on microSD
-var ExternalShaderRoot = fmt.Sprintf("%s/shadercache", ExternalDataRoot)
+var ExternalShaderRoot = filepath.Join(ExternalDataRoot, "shadercache")
 
 // SteamApiUrl The URL for the Steam GetAppList URL
 var SteamApiUrl = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
