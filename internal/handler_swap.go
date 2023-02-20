@@ -63,6 +63,7 @@ func getAvailableSwapSizes() ([]string, error) {
 		}
 	}
 
+	CryoUtils.InfoLog.Println("Available Swap Sizes:", validSizes)
 	return validSizes, nil
 }
 

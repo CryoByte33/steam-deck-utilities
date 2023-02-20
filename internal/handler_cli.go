@@ -1,25 +1,14 @@
 package internal
 
 import (
-	"fmt"
 	"strconv"
+	"strings"
 )
 
 // ChangeSwapSizeCLI Change the swap file size to the specified size in GB
 func ChangeSwapSizeCLI(size int) error {
-	// Get the free space in /home
-	availableSpace, err := getFreeSpace("/home")
-	if err != nil {
-		return fmt.Errorf("error getting available space in /home")
-	}
-
-	selectedSize := size * GigabyteMultiplier
-	if int64(selectedSize+SpaceOverhead) > availableSpace {
-		return fmt.Errorf("not enough space to resize swap to chosen size")
-	}
-
 	// Disable swap temporarily
-	err = disableSwap()
+	err := disableSwap()
 	if err != nil {
 		return err
 	}
@@ -59,7 +48,7 @@ func UseRecommendedSettings() error {
 		}
 		if len(availableSizes) != 1 {
 			// Get the last entry in the availableSizes list
-			size, err = strconv.Atoi(availableSizes[len(availableSizes)-1])
+			size, err = strconv.Atoi(strings.Fields(availableSizes[len(availableSizes)-1])[0])
 			if err != nil {
 				return err
 			}
