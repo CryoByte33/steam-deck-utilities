@@ -72,7 +72,7 @@ After choosing these options, the Deck will be identical to an unmodified versio
   * This does not occur in GUI mode, due to how I was able to implement authentication, and will be patched out of CLI-only mode soon.
 
 ## FAQ
-See [the FAQ page](https://github.com/CryoByte33/steam-deck-utilities/docs/faq.md).
+See [the FAQ page](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/faq.md).
 
 ## Troubleshooting
 ### Right-clicking the link to save it doesn't open a dialog box
