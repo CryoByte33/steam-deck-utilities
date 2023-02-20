@@ -53,7 +53,7 @@ func main() {
 				if err != nil {
 					return err
 				}
-				err = internal.ChangeSwapSizeCLI(size)
+				err = internal.ChangeSwapSizeCLI(size, false)
 				if err != nil {
 					return err
 				}

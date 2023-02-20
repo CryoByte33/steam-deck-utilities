@@ -6,7 +6,11 @@ import (
 )
 
 // ChangeSwapSizeCLI Change the swap file size to the specified size in GB
-func ChangeSwapSizeCLI(size int) error {
+func ChangeSwapSizeCLI(size int, isUI bool) error {
+	// Refresh creds if running with UI
+	if isUI {
+		renewSudoAuth()
+	}
 	// Disable swap temporarily
 	err := disableSwap()
 	if err != nil {
@@ -19,6 +23,11 @@ func ChangeSwapSizeCLI(size int) error {
 		return err
 	}
 
+	// Refresh creds if running with UI
+	// Prevents long-running swap resized from causing issues
+	if isUI {
+		renewSudoAuth()
+	}
 	// Set permissions on file
 	err = setSwapPermissions()
 	if err != nil {
@@ -57,12 +66,12 @@ func UseRecommendedSettings() error {
 				size = 16
 			}
 		}
-		err = ChangeSwapSizeCLI(size)
+		err = ChangeSwapSizeCLI(size, true)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = ChangeSwapSizeCLI(RecommendedSwapSize)
+		err = ChangeSwapSizeCLI(RecommendedSwapSize, true)
 		if err != nil {
 			return err
 		}
@@ -110,7 +119,7 @@ func UseRecommendedSettings() error {
 func UseStockSettings() error {
 	CryoUtils.InfoLog.Println("Resizing swap file to 1GB...")
 	// Revert swap file size
-	err := ChangeSwapSizeCLI(DefaultSwapSize)
+	err := ChangeSwapSizeCLI(DefaultSwapSize, true)
 	if err != nil {
 		return err
 	}
