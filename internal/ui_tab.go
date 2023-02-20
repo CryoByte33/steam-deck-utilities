@@ -19,8 +19,10 @@ func (app *Config) homeTab() *fyne.Container {
 	subheadingText.TextSize = SubHeadingTextSize
 
 	recommendedButton := widget.NewButton("Recommended", func() {
-		progressGroup := container.NewVBox(canvas.NewText("Applying recommended settings...", White),
-			canvas.NewText("Note: This can take up to 30 minutes if you haven't run TRIM recently.", White),
+		progressGroup := container.NewVBox(
+			canvas.NewText("Applying recommended settings...", White),
+			canvas.NewText("Note: This can take up to 30 minutes.", White),
+			canvas.NewText("      If this takes a while, please run TRIM manually.", White),
 			widget.NewProgressBarInfinite())
 		modal := widget.NewModalPopUp(progressGroup, CryoUtils.MainWindow.Canvas())
 		modal.Show()
