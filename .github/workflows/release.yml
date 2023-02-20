@@ -1,0 +1,74 @@
+name: Main
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  release_name: 2.0-${{github.run_number}}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: golang gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+          version: 1.0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19.x'
+          check-latest: true
+          cache: true
+
+      - name: Install Go Packages
+        run: |
+          go mod tidy
+
+      - name: Build
+        run: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" ./cmd/cryoutilities
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.release_name}}
+          path: cryoutilities
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: ${{env.release_name}}
+
+      - name: Delete Previous Latest Release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: latest
+          delete_release: true
+          repo: ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Unique Release
+        shell: bash
+        run: hub release create ${{ env.release_name }} -m ${{ env.release_name }} -a cryo_utilities
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Latest Release
+        shell: bash
+        run: hub release create latest -m latest -a cryo_utilities
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
