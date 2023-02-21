@@ -25,12 +25,12 @@ If you're interested, please see the [announcement video here](https://youtu.be/
   * **NEW** Delete shadercache and compatdata for whichever games you select
 * **NEW** Full CLI mode
 
-Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/@cryobyte33) 
+Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/@cryobyte33)
 for examples on how to use this and what performance you can expect.
 
 ## Install
-[Download this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop) 
-to your desktop (right click and save file) on your Steam Deck, then double-click it. 
+[Download this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop)
+to your desktop (right click and save file) on your Steam Deck, then double-click it.
 
 This will install the program, create desktop icons, and create menu entries.
 
@@ -54,7 +54,7 @@ sudo ~/.cryo_utilities/cryo_utilities help
 Double-click the "Update CryoUtilities" icon on the desktop, you will get a dialog box when the update is complete.
 
 ## Uninstall
-Double-click the "Uninstall CryoUtilities" icon on the desktop, you will be asked if you're sure, then asked if you want 
+Double-click the "Uninstall CryoUtilities" icon on the desktop, you will be asked if you're sure, then asked if you want
 to revert the tweaks that have been made.
 
 ## Revert To Default Settings
@@ -72,7 +72,7 @@ After choosing these options, the Deck will be identical to an unmodified versio
   * This does not occur in GUI mode, due to how I was able to implement authentication, and will be patched out of CLI-only mode soon.
 
 ## FAQ
-See [the FAQ page](https://github.com/CryoByte33/steam-deck-utilities/docs/faq.md).
+See [the FAQ page](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/faq.md).
 
 ## Troubleshooting
 ### Right-clicking the link to save it doesn't open a dialog box
