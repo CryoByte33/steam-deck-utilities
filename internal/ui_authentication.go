@@ -12,6 +12,8 @@ import (
 func renewSudoAuth() {
 	// Do a really basic command to renew sudo auth
 	cmd := exec.Command("sudo", "-S", "--", "echo")
+	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
+	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
@@ -28,6 +30,7 @@ func renewSudoAuth() {
 		CryoUtils.ErrorLog.Println(err)
 		return
 	}
+	stdin.Close()
 	err = cmd.Wait()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
