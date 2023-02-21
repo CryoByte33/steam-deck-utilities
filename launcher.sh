@@ -1,5 +1,5 @@
 !/bin/bash
-if [ "$(xrandr --current | grep '*' | xargs | cut -d ' ' -f1)" = "800x1280" ]; then
+if [ "$(xrandr | grep ' connected' | wc -l)" -eq 1 ]; then
   export FYNE_SCALE=0.25
 fi
 
