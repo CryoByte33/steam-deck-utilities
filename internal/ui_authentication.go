@@ -2,6 +2,7 @@ package internal
 
 import (
 	"os/exec"
+	"time"
 
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
@@ -44,6 +45,8 @@ func testAuth(password string) error {
 	defer d.Hide()
 	// Do a really basic command to renew sudo auth
 	cmd := exec.Command("sudo", "-S", "--", "echo")
+	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
+	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return err
@@ -57,6 +60,7 @@ func testAuth(password string) error {
 		cmd.Process.Kill()
 		return err
 	}
+	stdin.Close()
 	err = cmd.Wait()
 	if err != nil {
 		return err
