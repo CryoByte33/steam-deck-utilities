@@ -57,7 +57,7 @@ echo "#!/usr/bin/env xdg-open
 Name=Update CryoUtilities
 Exec=curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/install.sh | bash -s --
 Icon=bittorrent-sync
-Terminal=false
+Terminal=true
 Type=Application
 StartupNotify=false" >"$HOME"/Desktop/UpdateCryoUtilities.desktop
 chmod +x "$HOME"/Desktop/UpdateCryoUtilities.desktop
@@ -93,7 +93,7 @@ echo "#!/usr/bin/env xdg-open
 Name=CryoUtilities - Update
 Exec=curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/install.sh | bash -s --
 Icon=bittorrent-sync
-Terminal=false
+Terminal=true
 Type=Application
 Categories=Utility
 StartupNotify=false" >"$HOME"/.local/share/applications/UpdateCryoUtilities.desktop
