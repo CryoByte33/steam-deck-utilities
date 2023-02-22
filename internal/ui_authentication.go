@@ -1,39 +1,40 @@
 package internal
 
 import (
+	"os/exec"
+	"time"
+
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"io"
-	"os/exec"
 )
 
 // Renews sudo auth for GUI mode
 func renewSudoAuth() {
 	// Do a really basic command to renew sudo auth
 	cmd := exec.Command("sudo", "-S", "--", "echo")
+	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
+	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
+		return
 	}
-
-	go func() {
-		defer func(stdin io.WriteCloser) {
-			err := stdin.Close()
-			if err != nil {
-				CryoUtils.ErrorLog.Println(err)
-				return
-			}
-		}(stdin)
-		_, err := io.WriteString(stdin, CryoUtils.UserPassword)
-		if err != nil {
-			CryoUtils.ErrorLog.Println(err)
-			return
-		}
-	}()
-
-	_, err = cmd.CombinedOutput()
+	err = cmd.Start()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
+		return
+	}
+	_, err = stdin.Write([]byte(CryoUtils.UserPassword + "\n"))
+	if err != nil {
+		cmd.Process.Kill()
+		CryoUtils.ErrorLog.Println(err)
+		return
+	}
+	stdin.Close()
+	err = cmd.Wait()
+	if err != nil {
+		CryoUtils.ErrorLog.Println(err)
+		return
 	}
 }
 
@@ -44,36 +45,28 @@ func testAuth(password string) error {
 		CryoUtils.MainWindow,
 	)
 	d.Show()
+	defer d.Hide()
 	// Do a really basic command to renew sudo auth
 	cmd := exec.Command("sudo", "-S", "--", "echo")
+	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
+	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		d.Hide()
 		return err
 	}
-
-	go func() {
-		defer func(stdin io.WriteCloser) {
-			err := stdin.Close()
-			if err != nil {
-				d.Hide()
-				CryoUtils.ErrorLog.Println(err)
-			}
-		}(stdin)
-		_, err := io.WriteString(stdin, password)
-		if err != nil {
-			d.Hide()
-			CryoUtils.ErrorLog.Println(err)
-		}
-	}()
-
-	_, err = cmd.CombinedOutput()
+	err = cmd.Start()
 	if err != nil {
-		d.Hide()
 		return err
 	}
-
-	d.Hide()
-
+	_, err = stdin.Write([]byte(password + "\n"))
+	if err != nil {
+		cmd.Process.Kill()
+		return err
+	}
+	stdin.Close()
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
 	return nil
 }

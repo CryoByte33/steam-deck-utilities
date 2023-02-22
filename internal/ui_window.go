@@ -2,14 +2,16 @@ package internal
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"os"
-	"strconv"
-	"strings"
 )
 
 func syncGameDataWindow() {
@@ -259,7 +261,7 @@ func cleanupDataWindow() {
 					CryoUtils.InfoLog.Println("Removing the following content:")
 					for i := range removeList {
 						for j := range possibleLocations {
-							path := fmt.Sprintf("%s/%s", possibleLocations[j], removeList[i])
+							path := filepath.Join(possibleLocations[j], removeList[i])
 							CryoUtils.InfoLog.Println(path)
 							err = os.RemoveAll(path)
 							if err != nil {

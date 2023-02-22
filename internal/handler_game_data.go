@@ -2,9 +2,11 @@ package internal
 
 import (
 	"fmt"
-	cp "github.com/otiai10/copy"
 	"os"
+	"path/filepath"
 	"strconv"
+
+	cp "github.com/otiai10/copy"
 )
 
 type StorageStatus struct {
@@ -57,8 +59,8 @@ func (s *StorageStatus) getStorageStatus(left string, right string) error {
 			return err
 		}
 	} else {
-		compat := fmt.Sprintf("%s/%s", left, ExternalCompatRoot)
-		shader := fmt.Sprintf("%s/%s", left, ExternalShaderRoot)
+		compat := filepath.Join(left, ExternalCompatRoot)
+		shader := filepath.Join(left, ExternalShaderRoot)
 		// Create the directories if they don't exist already
 		_ = os.MkdirAll(compat, 0777)
 		_ = os.MkdirAll(shader, 0777)
@@ -82,8 +84,8 @@ func (s *StorageStatus) getStorageStatus(left string, right string) error {
 			return err
 		}
 	} else {
-		compat := fmt.Sprintf("%s/%s", right, ExternalCompatRoot)
-		shader := fmt.Sprintf("%s/%s", right, ExternalShaderRoot)
+		compat := filepath.Join(right, ExternalCompatRoot)
+		shader := filepath.Join(right, ExternalShaderRoot)
 		// Create the directories if they don't exist already
 		_ = os.MkdirAll(compat, 0777)
 		_ = os.MkdirAll(shader, 0777)
@@ -105,26 +107,26 @@ func (d *DataToMove) getSpaceNeeded(left string, right string) {
 		leftCompat = SteamCompatRoot
 		leftShader = SteamShaderRoot
 	} else {
-		leftCompat = fmt.Sprintf("%s/%s", left, ExternalCompatRoot)
-		leftShader = fmt.Sprintf("%s/%s", left, ExternalShaderRoot)
+		leftCompat = filepath.Join(left, ExternalCompatRoot)
+		leftShader = filepath.Join(left, ExternalShaderRoot)
 	}
 
 	if right == SteamDataRoot {
 		rightCompat = SteamCompatRoot
 		rightShader = SteamShaderRoot
 	} else {
-		rightCompat = fmt.Sprintf("%s/%s", right, ExternalCompatRoot)
-		rightShader = fmt.Sprintf("%s/%s", right, ExternalShaderRoot)
+		rightCompat = filepath.Join(right, ExternalCompatRoot)
+		rightShader = filepath.Join(right, ExternalShaderRoot)
 	}
 
 	for x := range d.left {
-		d.leftSize += getDirectorySize(fmt.Sprintf("%s/%s", leftCompat, d.left[x]))
-		d.leftSize += getDirectorySize(fmt.Sprintf("%s/%s", leftShader, d.left[x]))
+		d.leftSize += getDirectorySize(filepath.Join(leftCompat, d.left[x]))
+		d.leftSize += getDirectorySize(filepath.Join(leftShader, d.left[x]))
 	}
 
 	for x := range d.right {
-		d.rightSize += getDirectorySize(fmt.Sprintf("%s/%s", rightCompat, d.right[x]))
-		d.rightSize += getDirectorySize(fmt.Sprintf("%s/%s", rightShader, d.right[x]))
+		d.rightSize += getDirectorySize(filepath.Join(rightCompat, d.right[x]))
+		d.rightSize += getDirectorySize(filepath.Join(rightShader, d.right[x]))
 	}
 }
 
@@ -179,31 +181,31 @@ func moveGameData(data DataToMove, left string, right string) error {
 		leftCompatPath = SteamCompatRoot
 		leftShaderPath = SteamShaderRoot
 	} else {
-		leftCompatPath = fmt.Sprintf("%s/%s", left, ExternalCompatRoot)
-		leftShaderPath = fmt.Sprintf("%s/%s", left, ExternalShaderRoot)
+		leftCompatPath = filepath.Join(left, ExternalCompatRoot)
+		leftShaderPath = filepath.Join(left, ExternalShaderRoot)
 	}
 
 	if right == SteamDataRoot {
 		rightCompatPath = SteamCompatRoot
 		rightShaderPath = SteamShaderRoot
 	} else {
-		rightCompatPath = fmt.Sprintf("%s/%s", right, ExternalCompatRoot)
-		rightShaderPath = fmt.Sprintf("%s/%s", right, ExternalShaderRoot)
+		rightCompatPath = filepath.Join(right, ExternalCompatRoot)
+		rightShaderPath = filepath.Join(right, ExternalShaderRoot)
 	}
 
 	// Moving to the left
 	for _, directory := range data.right {
-		leftCompatDir := fmt.Sprintf("%s/%s", leftCompatPath, directory)
-		leftShaderDir := fmt.Sprintf("%s/%s", leftShaderPath, directory)
-		rightCompatDir := fmt.Sprintf("%s/%s", rightCompatPath, directory)
-		rightShaderDir := fmt.Sprintf("%s/%s", rightShaderPath, directory)
+		leftCompatDir := filepath.Join(leftCompatPath, directory)
+		leftShaderDir := filepath.Join(leftShaderPath, directory)
+		rightCompatDir := filepath.Join(rightCompatPath, directory)
+		rightShaderDir := filepath.Join(rightShaderPath, directory)
 
 		// Remove any symlinks on the SSD in preparation for either moving to the SSD, or creating new symlinks
-		steamCompatDir := fmt.Sprintf("%s/%s", SteamCompatRoot, directory)
+		steamCompatDir := filepath.Join(SteamCompatRoot, directory)
 		if isSymbolicLink(steamCompatDir) {
 			_ = os.Remove(steamCompatDir)
 		}
-		steamShaderDir := fmt.Sprintf("%s/%s", SteamShaderRoot, directory)
+		steamShaderDir := filepath.Join(SteamShaderRoot, directory)
 		if isSymbolicLink(steamShaderDir) {
 			_ = os.Remove(steamShaderDir)
 		}
@@ -241,12 +243,12 @@ func moveGameData(data DataToMove, left string, right string) error {
 		if leftCompatPath != SteamCompatRoot {
 			// Create symlinks on the SSD to the new location
 			CryoUtils.InfoLog.Println("Creating symlink to new path on SSD...")
-			err = os.Symlink(leftCompatDir, fmt.Sprintf("%s/%s", SteamCompatRoot, directory))
+			err = os.Symlink(leftCompatDir, filepath.Join(SteamCompatRoot, directory))
 			if err != nil {
 				CryoUtils.ErrorLog.Println(err)
 				return err
 			}
-			err = os.Symlink(leftShaderDir, fmt.Sprintf("%s/%s", SteamShaderRoot, directory))
+			err = os.Symlink(leftShaderDir, filepath.Join(SteamShaderRoot, directory))
 			if err != nil {
 				CryoUtils.ErrorLog.Println(err)
 				return err
@@ -258,17 +260,17 @@ func moveGameData(data DataToMove, left string, right string) error {
 
 	// Moving to the right
 	for _, directory := range data.left {
-		leftCompatDir := fmt.Sprintf("%s/%s", leftCompatPath, directory)
-		leftShaderDir := fmt.Sprintf("%s/%s", leftShaderPath, directory)
-		rightCompatDir := fmt.Sprintf("%s/%s", rightCompatPath, directory)
-		rightShaderDir := fmt.Sprintf("%s/%s", rightShaderPath, directory)
+		leftCompatDir := filepath.Join(leftCompatPath, directory)
+		leftShaderDir := filepath.Join(leftShaderPath, directory)
+		rightCompatDir := filepath.Join(rightCompatPath, directory)
+		rightShaderDir := filepath.Join(rightShaderPath, directory)
 
 		// Remove any symlinks on the SSD in preparation for either moving to the SSD, or creating new symlinks
-		steamCompatDir := fmt.Sprintf("%s/%s", SteamCompatRoot, directory)
+		steamCompatDir := filepath.Join(SteamCompatRoot, directory)
 		if isSymbolicLink(steamCompatDir) {
 			_ = os.Remove(steamCompatDir)
 		}
-		steamShaderDir := fmt.Sprintf("%s/%s", SteamShaderRoot, directory)
+		steamShaderDir := filepath.Join(SteamShaderRoot, directory)
 		if isSymbolicLink(steamShaderDir) {
 			_ = os.Remove(steamShaderDir)
 		}
@@ -306,12 +308,12 @@ func moveGameData(data DataToMove, left string, right string) error {
 		if rightCompatPath != SteamCompatRoot {
 			// Create symlinks on the SSD to the new location
 			CryoUtils.InfoLog.Println("Creating symlink to new path on SSD...")
-			err = os.Symlink(rightCompatDir, fmt.Sprintf("%s/%s", SteamCompatRoot, directory))
+			err = os.Symlink(rightCompatDir, filepath.Join(SteamCompatRoot, directory))
 			if err != nil {
 				CryoUtils.ErrorLog.Println(err)
 				return err
 			}
-			err = os.Symlink(rightShaderDir, fmt.Sprintf("%s/%s", SteamShaderRoot, directory))
+			err = os.Symlink(rightShaderDir, filepath.Join(SteamShaderRoot, directory))
 			if err != nil {
 				CryoUtils.ErrorLog.Println(err)
 				return err

@@ -1,15 +1,16 @@
 package internal
 
 import (
-	"github.com/andygrunwald/vdf"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/andygrunwald/vdf"
 )
 
 type Library struct {
-	InstalledGames []int
 	Path           string
+	InstalledGames []int
 }
 
 func (lib *Library) listGames() {

@@ -2,11 +2,13 @@ package internal
 
 import (
 	"fmt"
+	"path/filepath"
+	"sort"
+	"strconv"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"sort"
-	"strconv"
 )
 
 type GameStatus struct {
@@ -51,8 +53,8 @@ func createGameDataList() (*widget.CheckGroup, error) {
 			compat = SteamCompatRoot
 			shader = SteamShaderRoot
 		} else {
-			compat = fmt.Sprintf("%s/%s", libraries[i].Path, ExternalCompatRoot)
-			shader = fmt.Sprintf("%s/%s", libraries[i].Path, ExternalShaderRoot)
+			compat = filepath.Join(libraries[i].Path, ExternalCompatRoot)
+			shader = filepath.Join(libraries[i].Path, ExternalShaderRoot)
 		}
 
 		// Crawl the compat path and append the folders
@@ -181,7 +183,7 @@ func (app *Config) refreshSwapContent() {
 	swap, err := getSwapFileSize()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
-		swapStr := fmt.Sprintf("Current Swap Size: Unknown")
+		swapStr := "Current Swap Size: Unknown"
 		app.SwapText.Text = swapStr
 		app.SwapText.Color = Gray
 	} else {
@@ -203,7 +205,7 @@ func (app *Config) refreshSwappinessContent() {
 	swappiness, err := getSwappinessValue()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
-		swappinessStr := fmt.Sprintf("Current Swappiness: Unknown")
+		swappinessStr := "Current Swappiness: Unknown"
 		app.SwappinessText.Text = swappinessStr
 		app.SwappinessText.Color = Gray
 	} else {
