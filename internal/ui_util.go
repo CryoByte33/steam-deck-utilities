@@ -287,6 +287,27 @@ func (app *Config) refreshPageLockUnfairnessContent() {
 	app.PageLockUnfairnessText.Refresh()
 }
 
+func (app *Config) refreshVRAMContent() {
+	app.InfoLog.Println("Refreshing VRAM data...")
+	vram, err := getVRAMValue()
+	if err != nil || vram == 0 {
+		CryoUtils.ErrorLog.Println(err)
+		vramStr := fmt.Sprintf("Current VRAM: Unknown")
+		app.VRAMText.Text = vramStr
+		app.VRAMText.Color = Gray
+	} else {
+		vramStr := fmt.Sprintf("Current VRAM: %d", vram)
+		app.VRAMText.Text = vramStr
+		if vram == RecommendedVRAM {
+			app.VRAMText.Color = Green
+		} else {
+			app.VRAMText.Color = Red
+		}
+	}
+
+	app.VRAMText.Refresh()
+}
+
 func (app *Config) refreshAllContent() {
 	app.refreshSwapContent()
 	app.refreshSwappinessContent()
@@ -295,4 +316,5 @@ func (app *Config) refreshAllContent() {
 	app.refreshShMemContent()
 	app.refreshDefragContent()
 	app.refreshPageLockUnfairnessContent()
+	app.refreshVRAMContent()
 }

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -56,6 +57,7 @@ func (app *Config) mainUI() {
 		container.NewTabItemWithIcon("Swap", theme.MailReplyAllIcon(), app.swapTab()),
 		container.NewTabItemWithIcon("Memory", theme.ComputerIcon(), app.memoryTab()),
 		container.NewTabItemWithIcon("Storage", theme.StorageIcon(), app.storageTab()),
+		container.NewTabItemWithIcon("GPU", theme.MediaVideoIcon(), app.gpuTab()),
 	)
 	tabs.SetTabLocation(container.TabLocationTop)
 

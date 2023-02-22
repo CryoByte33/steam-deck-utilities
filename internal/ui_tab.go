@@ -241,3 +241,39 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	return full
 }
+
+// Get VRAM data
+func (app *Config) gpuTab() *fyne.Container {
+	app.VRAMText = canvas.NewText("Current VRAM size: Unknown", Gray)
+
+	// Get VRAM value
+	app.refreshVRAMContent()
+
+	CryoUtils.VRAMButton = widget.NewButton("Increase VRAM", func() {
+		dialog.ShowInformation(
+			"Increase your VRAM",
+			"To change that setting you need to turnoff your Steam Deck.\n"+
+				"Press and hold the Volume Up button and press the Power button.\n\n"+
+				"Setup Utility -> Advanced -> UMA Frame Buffer Size\n\n"+
+				"For most use case using 4GB is recommended.\n\n"+
+				"Please be aware that it might cause issue on a few games such as RDR2.",
+			app.MainWindow)
+	})
+	vramCard := widget.NewCard("Video RAM", "", app.VRAMButton)
+
+	app.GPUBar = container.NewGridWithColumns(1,
+		container.NewCenter(app.VRAMText))
+	topBar := container.NewVBox(
+		container.NewGridWithRows(1),
+		container.NewGridWithRows(1, container.NewCenter(canvas.NewText("Current Tweak Status:", White))),
+		app.GPUBar,
+	)
+
+	gpuVBox := container.NewVBox(
+		vramCard,
+	)
+	scroll := container.NewScroll(gpuVBox)
+	full := container.NewBorder(topBar, nil, nil, nil, scroll)
+
+	return full
+}
