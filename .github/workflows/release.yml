@@ -1,15 +1,13 @@
 name: Main
 
-on:
-  push:
-    branches: [ "main" ]
+on: push
 
 env:
   release_name: 2.0-${{github.run_number}}
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,7 +20,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: '^1.19.x'
+          go-version: '^1.20.x'
           check-latest: true
           cache: true
 
@@ -31,17 +29,18 @@ jobs:
           go mod tidy
 
       - name: Build
-        run: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" ./cmd/cryoutilities
+        run: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o cryo_utilities ./cmd/cryoutilities
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.release_name}}
-          path: cryoutilities
+          path: cryo_utilities
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -63,12 +62,12 @@ jobs:
 
       - name: Create Unique Release
         shell: bash
-        run: hub release create ${{ env.release_name }} -m ${{ env.release_name }} -a cryoutilities
+        run: hub release create ${{ env.release_name }} -m ${{ env.release_name }} -a cryo_utilities
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Latest Release
         shell: bash
-        run: hub release create latest -m latest -a cryoutilities
+        run: hub release create latest -m latest -a cryo_utilities
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
