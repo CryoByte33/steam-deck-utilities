@@ -16,7 +16,7 @@ rm -rf "$HOME/.cryo_utilities" &>/dev/null
 mkdir -p "$HOME/.cryo_utilities" &>/dev/null
 
 # Install binary
-wget https://github.com/CryoByte33/steam-deck-utilities/releases/download/latest/cryoutilities -O "$HOME/.cryo_utilities/cryo_utilities"
+wget https://github.com/CryoByte33/steam-deck-utilities/releases/download/latest/cryo_utilities -O "$HOME/.cryo_utilities/cryo_utilities"
 chmod +x "$HOME/.cryo_utilities/cryo_utilities"
 
 # Install launcher script
