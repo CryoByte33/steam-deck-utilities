@@ -169,8 +169,8 @@ echo 1 | sudo tee /proc/sys/vm/page_lock_unfairness
 
 ## Sources
 
-Some wording, and general sanity checks, were provided by [Emin](https://github.com/xeome), who is likely to be a big
-contributor going forward given his interest in low-level Linux optimizations.
+Some wording and general sanity checks were provided by [Emin](https://github.com/xeome), who is likely to be a big
+contributor going forward, given his interest in low-level Linux optimizations.
 
 The rest is provided by [the Arch Wiki](https://wiki.archlinux.org), [Phoronix](https://www.phoronix.com),
 [kernel docs](https://docs.kernel.org) and various bits of knowledge that I've gathered over the years.
