@@ -24,7 +24,7 @@ type DataToMove struct {
 }
 
 // Get a list of the directories inside the provided directory, ignoring symbolic links
-func getDirectoryList(path string) ([]string, error) {
+func getDirectoryList(path string, includeSymlinks bool) ([]string, error) {
 	var folderList []string
 	// Get a list of all files in directory
 	files, err := os.ReadDir(path)
@@ -36,10 +36,16 @@ func getDirectoryList(path string) ([]string, error) {
 	for _, file := range files {
 		// ui.CryoUtils.InfoLog.Println(file.Name())
 		// Create a full path with the file and path names
-		fullPath := path + "/" + file.Name()
-		// If the file is a directory AND is NOT a symlink, append the name of the folder to the list
-		if file.IsDir() && !isSymbolicLink(fullPath) {
-			folderList = append(folderList, file.Name())
+		fullPath := filepath.Join(path, file.Name())
+		if !includeSymlinks {
+			// If the file is a directory AND is NOT a symlink, append the name of the folder to the list
+			if file.IsDir() && !isSymbolicLink(fullPath) {
+				folderList = append(folderList, file.Name())
+			}
+		} else {
+			if file.IsDir() {
+				folderList = append(folderList, file.Name())
+			}
 		}
 	}
 
@@ -50,11 +56,11 @@ func getDirectoryList(path string) ([]string, error) {
 func (s *StorageStatus) getStorageStatus(left string, right string) error {
 	var err error
 	if left == SteamDataRoot {
-		s.LeftCompatDirectories, err = getDirectoryList(SteamCompatRoot)
+		s.LeftCompatDirectories, err = getDirectoryList(SteamCompatRoot, false)
 		if err != nil {
 			return err
 		}
-		s.LeftShaderDirectories, err = getDirectoryList(SteamShaderRoot)
+		s.LeftShaderDirectories, err = getDirectoryList(SteamShaderRoot, false)
 		if err != nil {
 			return err
 		}
@@ -64,22 +70,22 @@ func (s *StorageStatus) getStorageStatus(left string, right string) error {
 		// Create the directories if they don't exist already
 		_ = os.MkdirAll(compat, 0777)
 		_ = os.MkdirAll(shader, 0777)
-		s.LeftCompatDirectories, err = getDirectoryList(compat)
+		s.LeftCompatDirectories, err = getDirectoryList(compat, false)
 		if err != nil {
 			return err
 		}
-		s.LeftShaderDirectories, err = getDirectoryList(shader)
+		s.LeftShaderDirectories, err = getDirectoryList(shader, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if right == SteamDataRoot {
-		s.RightCompatDirectories, err = getDirectoryList(SteamCompatRoot)
+		s.RightCompatDirectories, err = getDirectoryList(SteamCompatRoot, false)
 		if err != nil {
 			return err
 		}
-		s.RightShaderDirectories, err = getDirectoryList(SteamShaderRoot)
+		s.RightShaderDirectories, err = getDirectoryList(SteamShaderRoot, false)
 		if err != nil {
 			return err
 		}
@@ -89,11 +95,11 @@ func (s *StorageStatus) getStorageStatus(left string, right string) error {
 		// Create the directories if they don't exist already
 		_ = os.MkdirAll(compat, 0777)
 		_ = os.MkdirAll(shader, 0777)
-		s.RightCompatDirectories, err = getDirectoryList(compat)
+		s.RightCompatDirectories, err = getDirectoryList(compat, false)
 		if err != nil {
 			return err
 		}
-		s.RightShaderDirectories, err = getDirectoryList(shader)
+		s.RightShaderDirectories, err = getDirectoryList(shader, false)
 		if err != nil {
 			return err
 		}
