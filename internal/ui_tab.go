@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"strconv"
 	"strings"
 )
 
@@ -19,11 +20,20 @@ func (app *Config) homeTab() *fyne.Container {
 		"settings individually.", White)
 	subheadingText.TextSize = SubHeadingTextSize
 
-	availableSizes, _ := getAvailableSwapSizes()
-	chosenSize := strings.Fields(availableSizes[len(availableSizes)-1])[0]
+	availableSpace, err := getFreeSpace("/home")
+	if err != nil {
+		presentErrorInUI(err, app.MainWindow)
+	}
+	var chosenSize string
+	if availableSpace < RecommendedSwapSizeBytes {
+		availableSizes, _ := getAvailableSwapSizes()
+		chosenSize = strings.Fields(availableSizes[len(availableSizes)-1])[0]
+	} else {
+		chosenSize = strconv.Itoa(RecommendedSwapSize)
+	}
 
 	actionText := widget.NewLabel(
-		"Swap: " + chosenSize + "\n" +
+		"Swap: " + chosenSize + "GB\n" +
 			"Swappiness: " + RecommendedSwappiness + "\n" +
 			"HugePages: Enabled\n" +
 			"Compaction Proactivenes: " + RecommendedCompactionProactiveness + "\n" +
