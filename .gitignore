@@ -75,3 +75,4 @@ fyne-cross/*
 .idea
 .idea/*
 cryoutilities.log
+/Dockerfile
