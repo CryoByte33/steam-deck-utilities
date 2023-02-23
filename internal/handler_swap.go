@@ -54,11 +54,12 @@ func getSwappinessValue() (int, error) {
 
 // Get current swap file size, in bytes.
 func getSwapFileSize() (int64, error) {
-	if doesFileExist(BTRFSSwapFileLocation) {
-		CryoUtils.SwapFileLocation = BTRFSSwapFileLocation
-	} else {
-		CryoUtils.SwapFileLocation = DefaultSwapFileLocation
+	location, err := getSwapFileLocation()
+	if err != nil {
+		return DefaultSwapSizeBytes, fmt.Errorf("error getting swapfile location: %v", err)
 	}
+
+	CryoUtils.SwapFileLocation = location
 
 	info, err := os.Stat(CryoUtils.SwapFileLocation)
 	if err != nil {
@@ -137,11 +138,11 @@ func initNewSwapFile() error {
 	CryoUtils.InfoLog.Println("Enabling swap on", CryoUtils.SwapFileLocation, "...")
 	_, err := exec.Command("sudo", "mkswap", CryoUtils.SwapFileLocation).Output()
 	if err != nil {
-		return fmt.Errorf("error creating swap on %s", DefaultSwapFileLocation)
+		return fmt.Errorf("error creating swap on %s", CryoUtils.SwapFileLocation)
 	}
 	_, err = exec.Command("sudo", "swapon", CryoUtils.SwapFileLocation).Output()
 	if err != nil {
-		return fmt.Errorf("error enabling swap on %s", DefaultSwapFileLocation)
+		return fmt.Errorf("error enabling swap on %s", CryoUtils.SwapFileLocation)
 	}
 	return nil
 }
