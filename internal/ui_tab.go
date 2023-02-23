@@ -6,6 +6,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"strconv"
+	"strings"
 )
 
 // Home tab for "recommended" and "default" buttons
@@ -18,11 +20,31 @@ func (app *Config) homeTab() *fyne.Container {
 		"settings individually.", White)
 	subheadingText.TextSize = SubHeadingTextSize
 
+	availableSpace, err := getFreeSpace("/home")
+	if err != nil {
+		presentErrorInUI(err, app.MainWindow)
+	}
+	var chosenSize string
+	if availableSpace < RecommendedSwapSizeBytes {
+		availableSizes, _ := getAvailableSwapSizes()
+		chosenSize = strings.Fields(availableSizes[len(availableSizes)-1])[0]
+	} else {
+		chosenSize = strconv.Itoa(RecommendedSwapSize)
+	}
+
+	actionText := widget.NewLabel(
+		"Swap: " + chosenSize + "GB\n" +
+			"Swappiness: " + RecommendedSwappiness + "\n" +
+			"HugePages: Enabled\n" +
+			"Compaction Proactivenes: " + RecommendedCompactionProactiveness + "\n" +
+			"HugePage Defragmentation: Disabled\n" +
+			"Page Lock Unfairness: " + RecommendedPageLockUnfairness + "\n" +
+			"Shared Memory in Huge Pages: Enabled")
+
 	recommendedButton := widget.NewButton("Recommended", func() {
 		progressGroup := container.NewVBox(
 			canvas.NewText("Applying recommended settings...", White),
-			canvas.NewText("Note: This can take up to 30 minutes.", White),
-			canvas.NewText("      If this takes a while, please run TRIM manually.", White),
+			actionText,
 			widget.NewProgressBarInfinite())
 		modal := widget.NewModalPopUp(progressGroup, CryoUtils.MainWindow.Canvas())
 		modal.Show()

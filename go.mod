@@ -3,7 +3,7 @@ module cryoutilities
 go 1.20
 
 require (
-	fyne.io/fyne/v2 v2.3.1-rc2
+	fyne.io/fyne/v2 v2.3.1
 	github.com/andygrunwald/vdf v1.1.0
 	github.com/cristalhq/acmd v0.11.0
 	github.com/moby/sys/mountinfo v0.6.2
