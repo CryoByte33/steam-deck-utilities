@@ -1,12 +1,43 @@
 package internal
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 )
+
+// Get swap file location from the system (/proc/swaps)
+// Sample output:
+// Filename				Type		Size	Used	Priority
+// /home/swapfile			file		8388604	0	-2
+func getSwapFileLocation() (string, error) {
+	file, err := os.Open("/proc/swaps")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	// skip the first line (header)
+	scanner.Scan()
+
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) >= 3 && fields[0] != "Filename" {
+			location := fields[0]
+			// If swapfile is a partition then return no swapfile found
+			if strings.HasPrefix(location, "/dev/") {
+				return "", fmt.Errorf("no swapfile found")
+			}
+			return location, nil
+		}
+	}
+
+	return "", fmt.Errorf("no swapfile found")
+}
 
 // Get the current swap and swappiness values
 func getSwappinessValue() (int, error) {
