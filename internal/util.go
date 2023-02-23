@@ -40,7 +40,7 @@ type Config struct {
 	MemoryContainer               *fyne.Container
 	SwapBar                       *fyne.Container
 	MemoryBar                     *fyne.Container
-	GPUBar                        *fyne.Container
+	VRAMBar                        *fyne.Container
 	HugePagesButton               *widget.Button
 	ShMemButton                   *widget.Button
 	CompactionProactivenessButton *widget.Button
@@ -292,4 +292,15 @@ func setUnitValue(param string, value string) error {
 	io.Copy(os.Stdout, &buf)
 
 	return nil
+}
+
+func getHumanVRAMSize(size int) string {
+	// Converts the VRAM size to human readable format.
+	// The size argument is in MB.
+	text := fmt.Sprintf("%dMB", size)
+	if(size >= 1024) {
+		text = fmt.Sprintf("%dGB", size / 1024)
+	}
+
+	return text
 }

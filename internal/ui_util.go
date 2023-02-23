@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
@@ -296,7 +295,8 @@ func (app *Config) refreshVRAMContent() {
 		app.VRAMText.Text = vramStr
 		app.VRAMText.Color = Gray
 	} else {
-		vramStr := fmt.Sprintf("Current VRAM: %d", vram)
+		humanVRAMSize :=  getHumanVRAMSize(vram)
+		vramStr := fmt.Sprintf("Current VRAM: %s", humanVRAMSize)
 		app.VRAMText.Text = vramStr
 		if vram == RecommendedVRAM {
 			app.VRAMText.Color = Green

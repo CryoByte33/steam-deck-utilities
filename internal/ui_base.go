@@ -57,7 +57,7 @@ func (app *Config) mainUI() {
 		container.NewTabItemWithIcon("Swap", theme.MailReplyAllIcon(), app.swapTab()),
 		container.NewTabItemWithIcon("Memory", theme.ComputerIcon(), app.memoryTab()),
 		container.NewTabItemWithIcon("Storage", theme.StorageIcon(), app.storageTab()),
-		container.NewTabItemWithIcon("GPU", theme.MediaVideoIcon(), app.gpuTab()),
+		container.NewTabItemWithIcon("VRAM", theme.MediaVideoIcon(), app.vramTab()),
 	)
 	tabs.SetTabLocation(container.TabLocationTop)
 
