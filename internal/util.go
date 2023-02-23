@@ -40,7 +40,6 @@ type Config struct {
 	MemoryContainer               *fyne.Container
 	SwapBar                       *fyne.Container
 	MemoryBar                     *fyne.Container
-	VRAMBar                        *fyne.Container
 	HugePagesButton               *widget.Button
 	ShMemButton                   *widget.Button
 	CompactionProactivenessButton *widget.Button

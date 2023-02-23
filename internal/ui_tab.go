@@ -264,12 +264,12 @@ func (app *Config) vramTab() *fyne.Container {
 
 	vramCard := widget.NewCard("Minimum VRAM", "How to change the minimum VRAM:", textVBox)
 
-	app.VRAMBar = container.NewGridWithColumns(1,
+	vramBAR := container.NewGridWithColumns(1,
 		container.NewCenter(app.VRAMText))
 	topBar := container.NewVBox(
 		container.NewGridWithRows(1),
 		container.NewGridWithRows(1, container.NewCenter(canvas.NewText("Current Tweak Status:", White))),
-		app.VRAMBar,
+		vramBAR,
 	)
 
 	vramVBOX := container.NewVBox(
