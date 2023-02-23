@@ -16,15 +16,26 @@ rm -rf "$HOME/.cryo_utilities" &>/dev/null
 mkdir -p "$HOME/.cryo_utilities" &>/dev/null
 
 # Install binary
-wget https://github.com/CryoByte33/steam-deck-utilities/releases/download/latest/cryo_utilities -O "$HOME/.cryo_utilities/cryo_utilities"
+wget https://github.com/CryoByte33/steam-deck-utilities/releases/download/latest/cryo_utilities -O "$HOME/.cryo_utilities/cryo_utilities" 2>&1 | sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --progress --title="Downloading CU Binary" --auto-close --width=300
+
+# Start a loop testing if zenity is running, and if not kill wget (allows for cancel to work)
+RUNNING=0
+while [ $RUNNING -eq 0 ]; do
+  if [ -z "$(pidof zenity)" ]; then
+    pkill wget
+    RUNNING=1
+  fi
+  sleep 0.1
+done
+
 chmod +x "$HOME/.cryo_utilities/cryo_utilities"
 
 # Install launcher script
-curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/launcher.sh --silent --output "$HOME/.cryo_utilities/launcher.sh"
+wget https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/launcher.sh -O "$HOME/.cryo_utilities/launcher.sh"
 chmod +x "$HOME/.cryo_utilities/launcher.sh"
 
 # Install Icon
-curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cmd/cryoutilities/Icon.png --silent --output "$HOME/.cryo_utilities/cryo-utilities.png"
+wget https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cmd/cryoutilities/Icon.png -O "$HOME/.cryo_utilities/cryo-utilities.png"
 cd ~/.cryo_utilities || exit
 xdg-icon-resource install cryo-utilities.png --size 64
 
