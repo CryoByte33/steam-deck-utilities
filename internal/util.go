@@ -157,7 +157,7 @@ func writeFile(path string, contents string) error {
 	}
 
 	// Move the completed file to final location.
-	_, err = exec.Command("sudo", "mv", tempPath, path).Output()
+	_, err = createCommand("sudo", "mv", tempPath, path).Output()
 	if err != nil {
 		return fmt.Errorf("error moving temp file to final location")
 	}
@@ -167,7 +167,7 @@ func writeFile(path string, contents string) error {
 
 func removeFile(path string) error {
 	CryoUtils.InfoLog.Println("Removing", path)
-	_, err := exec.Command("sudo", "rm", path).Output()
+	_, err := createCommand("sudo", "rm", path).Output()
 	if err != nil {
 		CryoUtils.ErrorLog.Println("Couldn't delete", path, ", likely missing.")
 	}
@@ -225,7 +225,7 @@ func removeElementFromStringSlice(str string, slice []string) []string {
 
 func getUnitStatus(param string) (string, error) {
 	var output string
-	cmd, err := exec.Command("sudo", "cat", UnitMatrix[param]).Output()
+	cmd, err := createCommand("sudo", "cat", UnitMatrix[param]).Output()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 		return "nil", err
@@ -271,10 +271,14 @@ func removeUnitFile(param string) error {
 
 func setUnitValue(param string, value string) error {
 	CryoUtils.InfoLog.Println("Writing", value, "for param", param, "to memory.")
+	if isAppWithinFlatpak() {
+		return setUnitValueWithinFlatpak(param, value)
+	}
+
 	// This mess is the only way I could find to push directly to unit files, without requiring
 	// a sudo password on installation to change capabilities.
-	echoCmd := exec.Command("echo", value)
-	teeCmd := exec.Command("sudo", "tee", UnitMatrix[param])
+	echoCmd := createCommand("echo", value)
+	teeCmd := createCommand("sudo", "tee", UnitMatrix[param])
 	reader, writer := io.Pipe()
 	var buf bytes.Buffer
 	echoCmd.Stdout = writer
@@ -289,4 +293,78 @@ func setUnitValue(param string, value string) error {
 	io.Copy(os.Stdout, &buf)
 
 	return nil
+}
+
+func setUnitValueWithinFlatpak(param string, value string) error {
+	hostSpawnCmd := "host-spawn"
+	hostCommandArgs := []string{"sudo", "sh", "-c"}
+	shellCmd := fmt.Sprintf("echo %v | tee %v", value, UnitMatrix[param])
+	hostCommandArgs = append(hostCommandArgs, shellCmd)
+	fmt.Println("Executing command ", hostSpawnCmd, hostCommandArgs)
+	cmd := exec.Command(hostSpawnCmd, hostCommandArgs...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	cmd.Start()
+	_, err = stdin.Write([]byte(CryoUtils.UserPassword + "\n"))
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return cmd.Wait()
+}
+
+func isAppWithinFlatpak() bool {
+	return os.Getenv("container") != ""
+}
+
+func createCommand(command string, args ...string) *exec.Cmd {
+	if !isAppWithinFlatpak() {
+		return exec.Command(command, args...)
+	}
+
+	hostSpawnCmd := "host-spawn"
+	hostCommandArgs := []string{command}
+	hostCommandArgs = append(hostCommandArgs, args...)
+	fmt.Println("Executing command ", hostSpawnCmd, hostCommandArgs)
+	cmd := exec.Command(hostSpawnCmd, hostCommandArgs...)
+
+	if command == "sudo" {
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			CryoUtils.ErrorLog.Println(err)
+			return nil
+		}
+		_, err = stdin.Write([]byte(CryoUtils.UserPassword + "\n"))
+		if err != nil {
+			CryoUtils.ErrorLog.Println(err)
+			return nil
+		}
+	}
+
+	return cmd
+}
+
+func createPasswordCommand(command string, args ...string) *exec.Cmd {
+	if !isAppWithinFlatpak() {
+		return exec.Command(command, args...)
+	}
+
+	hostSpawnCmd := "host-spawn"
+	hostCommandArgs := []string{command}
+	hostCommandArgs = append(hostCommandArgs, args...)
+	fmt.Println("Executing command ", hostSpawnCmd, hostCommandArgs)
+	cmd := exec.Command(hostSpawnCmd, hostCommandArgs...)
+	return cmd
+}
+
+func getUserHomeDir() string {
+	homedir := os.Getenv("HOME")
+	if homedir != "" {
+		return homedir
+	}
+
+	return "/home/deck/"
 }

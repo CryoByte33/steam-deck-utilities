@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -15,6 +16,13 @@ import (
 func main() {
 	// Delete old log file
 	os.Remove(internal.LogFilePath)
+
+	// Create logging directory
+	err := os.MkdirAll(filepath.Dir(internal.LogFilePath), 0777)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	// Create a log file
 	logFile, err := os.OpenFile(internal.LogFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {

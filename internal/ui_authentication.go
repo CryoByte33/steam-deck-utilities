@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"os/exec"
 	"time"
 
 	"fyne.io/fyne/v2/dialog"
@@ -11,7 +10,7 @@ import (
 // Renews sudo auth for GUI mode
 func renewSudoAuth() {
 	// Do a really basic command to renew sudo auth
-	cmd := exec.Command("sudo", "-S", "--", "echo")
+	cmd := createPasswordCommand("sudo", "-S", "--", "echo")
 	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
 	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()
@@ -47,7 +46,7 @@ func testAuth(password string) error {
 	d.Show()
 	defer d.Hide()
 	// Do a really basic command to renew sudo auth
-	cmd := exec.Command("sudo", "-S", "--", "echo")
+	cmd := createPasswordCommand("sudo", "-S", "--", "echo")
 	//Sudo will exit immediately if it's the correct password, but will hang for a moment if it isn't.
 	cmd.WaitDelay = 500 * time.Millisecond
 	stdin, err := cmd.StdinPipe()

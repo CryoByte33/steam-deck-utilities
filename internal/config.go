@@ -5,11 +5,13 @@ import (
 	"path/filepath"
 )
 
+var HomeDir = getUserHomeDir()
+
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
 var CurrentVersionNumber = "2.0.0"
 
 // InstallDirectory Location the program is installed.
-var InstallDirectory = "/home/deck/.cryo_utilities"
+var InstallDirectory = filepath.Join(HomeDir, ".cryo_utilities")
 
 // LogFilePath Location of the log file
 var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
@@ -109,13 +111,13 @@ var GigabyteMultiplier = 1024 * 1024 * 1024
 ////////////////////////
 
 // LibraryVDFLocation The default location of Steam's library VDF
-var LibraryVDFLocation = "/home/deck/.steam/steam/steamapps/libraryfolders.vdf"
+var LibraryVDFLocation = filepath.Join(HomeDir, ".steam/steam/steamapps/libraryfolders.vdf")
 
 // MountDirectory The folder where all external devices are mounts
 var MountDirectory = "/run/media"
 
 // SteamDataRoot The default location where Steam keeps compatdata and shadercache
-var SteamDataRoot = "/home/deck/.local/share/Steam"
+var SteamDataRoot = filepath.Join(HomeDir, ".local/share/Steam")
 
 // SteamCompatRoot Generates the full path of the compatdata folder, on SSD
 var SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")
