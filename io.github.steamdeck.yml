@@ -50,4 +50,4 @@ modules:
     sources:
       - type: git
         path: .
-        branch: relative-homdir
+        branch: flatpak-proto-2
