@@ -60,6 +60,18 @@ func getDefragStatus() bool {
 	return false
 }
 
+func getPageClusterStatus() bool {
+	status, err := getUnitStatus("page-cluster")
+	if err != nil {
+		CryoUtils.ErrorLog.Println("Unable to get current page-cluster")
+		return false
+	}
+	if status == RecommendedPageCluster {
+		return true
+	}
+	return false
+}
+
 // ToggleHugePages Simple one-function toggle for the button to use
 func ToggleHugePages() error {
 	if getHugePagesStatus() {
@@ -133,6 +145,21 @@ func TogglePageLockUnfairness() error {
 		}
 	} else {
 		err := SetPageLockUnfairness()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func TogglePageCluster() error {
+	if getPageClusterStatus() {
+		err := RevertPageCluster()
+		if err != nil {
+			return err
+		}
+	} else {
+		err := SetPageCluster()
 		if err != nil {
 			return err
 		}
@@ -266,6 +293,32 @@ func RevertDefrag() error {
 		return err
 	}
 	err = removeUnitFile("defrag")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SetPageCluster() error {
+	CryoUtils.InfoLog.Println("Setting page-cluster...")
+	err := setUnitValue("page-cluster", RecommendedPageCluster)
+	if err != nil {
+		return err
+	}
+	err = writeUnitFile("page-cluster", RecommendedPageCluster)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RevertPageCluster() error {
+	CryoUtils.InfoLog.Println("Disabling page-cluster...")
+	err := setUnitValue("page-cluster", DefaultPageCluster)
+	if err != nil {
+		return err
+	}
+	err = removeUnitFile("page-cluster")
 	if err != nil {
 		return err
 	}

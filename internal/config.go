@@ -26,6 +26,7 @@ var RecommendedCompactionProactiveness = "0"
 var RecommendedHugePageDefrag = "0"
 var RecommendedPageLockUnfairness = "1"
 var RecommendedShMem = "advise"
+var RecommendedPageCluster = "1"
 
 //////////////////////
 // Default Settings //
@@ -39,6 +40,7 @@ var DefaultCompactionProactiveness = "20"
 var DefaultHugePageDefrag = "1"
 var DefaultPageLockUnfairness = "5"
 var DefaultShMem = "never"
+var DefaultPageCluster = "3"
 
 ////////////////
 // Unit Files //
@@ -55,6 +57,7 @@ var UnitMatrix = map[string]string{
 	"hugepages":                "/sys/kernel/mm/transparent_hugepage/enabled",
 	"shmem_enabled":            "/sys/kernel/mm/transparent_hugepage/shmem_enabled",
 	"defrag":                   "/sys/kernel/mm/transparent_hugepage/khugepaged/defrag",
+	"page-cluster":             "/proc/sys/vm/page-cluster",
 }
 
 var OldSwappinessUnitFile = "/etc/sysctl.d/zzz-custom-swappiness.conf"

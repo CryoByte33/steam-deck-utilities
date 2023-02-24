@@ -20,7 +20,6 @@ type GameStatus struct {
 func presentErrorInUI(err error, win fyne.Window) {
 	CryoUtils.ErrorLog.Println(err)
 	dialog.ShowError(err, CryoUtils.MainWindow)
-	win.Close()
 }
 
 // Create a CheckGroup of game data to allow for selection.
@@ -285,6 +284,19 @@ func (app *Config) refreshPageLockUnfairnessContent() {
 	}
 	app.PageLockUnfairnessButton.Refresh()
 	app.PageLockUnfairnessText.Refresh()
+}
+
+func (app *Config) refreshPageClusterContent() {
+	app.InfoLog.Println("Refreshing page cluster data...")
+	if getPageClusterStatus() {
+		app.PageClusterButton.Text = "Revert Page Cluster"
+		app.PageClusterText.Color = Green
+	} else {
+		app.PageClusterButton.Text = "Set Page Cluster"
+		app.PageClusterText.Color = Red
+	}
+	app.PageClusterButton.Refresh()
+	app.PageClusterText.Refresh()
 }
 
 func (app *Config) refreshAllContent() {
