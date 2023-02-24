@@ -30,6 +30,7 @@ type Config struct {
 	CompactionProactivenessText   *canvas.Text
 	DefragText                    *canvas.Text
 	PageLockUnfairnessText        *canvas.Text
+	PageClusterText               *canvas.Text
 	SteamAPIResponse              map[int]string
 	MainWindow                    fyne.Window
 	SwapResizeProgressBar         *widget.ProgressBar
@@ -44,6 +45,7 @@ type Config struct {
 	CompactionProactivenessButton *widget.Button
 	DefragButton                  *widget.Button
 	PageLockUnfairnessButton      *widget.Button
+	PageClusterButton             *widget.Button
 	UserPassword                  string
 	SwapFileLocation              string
 }

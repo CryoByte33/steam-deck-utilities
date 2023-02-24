@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"strconv"
-	"strings"
 )
 
 // Home tab for "recommended" and "default" buttons
@@ -176,11 +177,13 @@ func (app *Config) storageTab() *fyne.Container {
 
 // Tab for non-swap, memory-related tweaks.
 func (app *Config) memoryTab() *fyne.Container {
+
 	app.HugePagesText = canvas.NewText("Huge Pages (THP)", Red)
 	app.ShMemText = canvas.NewText("Shared Memory in THP", Red)
 	app.CompactionProactivenessText = canvas.NewText("Compaction Proactiveness", Red)
 	app.DefragText = canvas.NewText("Defrag", Red)
 	app.PageLockUnfairnessText = canvas.NewText("Page Lock Unfairness", Red)
+	app.PageClusterText = canvas.NewText("Page Cluster", Red)
 
 	CryoUtils.HugePagesButton = widget.NewButton("Enable HugePages", func() {
 		renewSudoAuth()
@@ -227,18 +230,30 @@ func (app *Config) memoryTab() *fyne.Container {
 		app.refreshPageLockUnfairnessContent()
 	})
 
+	CryoUtils.PageClusterButton = widget.NewButton("Set Page Cluster", func() {
+		renewSudoAuth()
+		err := TogglePageCluster()
+		if err != nil {
+			presentErrorInUI(err, CryoUtils.MainWindow)
+		}
+		app.refreshPageClusterContent()
+	})
+
 	app.refreshHugePagesContent()
 	app.refreshCompactionProactivenessContent()
 	app.refreshShMemContent()
 	app.refreshDefragContent()
 	app.refreshPageLockUnfairnessContent()
+	app.refreshPageClusterContent()
 
-	app.MemoryBar = container.NewGridWithColumns(5,
+	app.MemoryBar = container.NewGridWithColumns(3,
 		container.NewCenter(app.HugePagesText),
 		container.NewCenter(app.ShMemText),
 		container.NewCenter(app.CompactionProactivenessText),
 		container.NewCenter(app.DefragText),
-		container.NewCenter(app.PageLockUnfairnessText))
+		container.NewCenter(app.PageLockUnfairnessText),
+		container.NewCenter(app.PageClusterText))
+
 	topBar := container.NewVBox(
 		container.NewGridWithRows(1),
 		container.NewGridWithRows(1, container.NewCenter(canvas.NewText("Current Tweak Status:", White))),
@@ -250,6 +265,7 @@ func (app *Config) memoryTab() *fyne.Container {
 	compactionProactivenessCard := widget.NewCard("Compaction Proactiveness", "Set compaction proactiveness", app.CompactionProactivenessButton)
 	defragCard := widget.NewCard("Huge Page Defragmentation", "Toggle huge page defragmentation", app.DefragButton)
 	pageLockUnfairnessCard := widget.NewCard("Page Lock Unfairness", "Set page lock unfairness", app.PageLockUnfairnessButton)
+	pageClusterCard := widget.NewCard("Page Cluster", "Set page cluster", app.PageClusterButton)
 
 	memoryVBox := container.NewVBox(
 		hugePagesCard,
@@ -257,6 +273,7 @@ func (app *Config) memoryTab() *fyne.Container {
 		compactionProactivenessCard,
 		defragCard,
 		pageLockUnfairnessCard,
+		pageClusterCard,
 	)
 	scroll := container.NewScroll(memoryVBox)
 	full := container.NewBorder(topBar, nil, nil, nil, scroll)

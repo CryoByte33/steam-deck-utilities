@@ -286,6 +286,19 @@ func (app *Config) refreshPageLockUnfairnessContent() {
 	app.PageLockUnfairnessText.Refresh()
 }
 
+func (app *Config) refreshPageClusterContent() {
+	app.InfoLog.Println("Refreshing page cluster data...")
+	if getPageClusterStatus() {
+		app.PageClusterButton.Text = "Revert Page Cluster"
+		app.PageClusterText.Color = Green
+	} else {
+		app.PageClusterButton.Text = "Set Page Cluster"
+		app.PageClusterText.Color = Red
+	}
+	app.PageClusterButton.Refresh()
+	app.PageClusterText.Refresh()
+}
+
 func (app *Config) refreshAllContent() {
 	app.refreshSwapContent()
 	app.refreshSwappinessContent()
