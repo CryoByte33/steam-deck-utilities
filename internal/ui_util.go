@@ -28,6 +28,49 @@ func createGameDataList() (*widget.CheckGroup, error) {
 	cleanupList.Enable()
 	cleanupList.Refresh()
 
+	localGames, err := getLocalGameList()
+	if err != nil {
+		return nil, err
+	}
+
+	var sortedMap []int
+
+	for i := range localGames {
+		// Add each key to the sortedMap slice, so we can sort it afterwards.
+		sortedMap = append(sortedMap, i)
+	}
+	// Sort the slice
+	sort.Ints(sortedMap)
+
+	// For each entry in the completed list, add an entry to the check group to return
+	for key := range sortedMap {
+		// Skips non-game prefixes
+		if sortedMap[key] == 0 || sortedMap[key] >= SteamGameMaxInteger {
+			continue
+		}
+
+		var optionStr string
+		var gameStr string
+
+		// If the game name is known, use that, otherwise ???.
+		if localGames[sortedMap[key]].GameName != "" {
+			gameStr = localGames[sortedMap[key]].GameName
+		} else {
+			gameStr = "???"
+		}
+
+		if localGames[sortedMap[key]].IsInstalled {
+			optionStr = fmt.Sprintf("%d - %s - Installed", sortedMap[key], gameStr)
+		} else {
+			optionStr = fmt.Sprintf("%d - %s - Not Installed", sortedMap[key], gameStr)
+		}
+		cleanupList.Append(optionStr)
+	}
+
+	return cleanupList, nil
+}
+
+func getLocalGameList() (map[int]GameStatus, error) {
 	// Use the cached API Response if already present
 	if CryoUtils.SteamAPIResponse == nil {
 		// Make a map of all games stored in the steam API
@@ -93,42 +136,7 @@ func createGameDataList() (*widget.CheckGroup, error) {
 			}
 		}
 	}
-
-	var sortedMap []int
-
-	for i := range localGames {
-		// Add each key to the sortedMap slice, so we can sort it afterwards.
-		sortedMap = append(sortedMap, i)
-	}
-	// Sort the slice
-	sort.Ints(sortedMap)
-
-	// For each entry in the completed list, add an entry to the check group to return
-	for key := range sortedMap {
-		// Skips non-game prefixes
-		if sortedMap[key] == 0 || sortedMap[key] >= SteamGameMaxInteger {
-			continue
-		}
-
-		var optionStr string
-		var gameStr string
-
-		// If the game name is known, use that, otherwise ???.
-		if localGames[sortedMap[key]].GameName != "" {
-			gameStr = localGames[sortedMap[key]].GameName
-		} else {
-			gameStr = "???"
-		}
-
-		if localGames[sortedMap[key]].IsInstalled {
-			optionStr = fmt.Sprintf("%d - %s - Installed", sortedMap[key], gameStr)
-		} else {
-			optionStr = fmt.Sprintf("%d - %s - Not Installed", sortedMap[key], gameStr)
-		}
-		cleanupList.Append(optionStr)
-	}
-
-	return cleanupList, nil
+	return localGames, nil
 }
 
 // Get data to move values as canvas elements.

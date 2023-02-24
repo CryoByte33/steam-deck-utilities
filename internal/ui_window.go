@@ -233,6 +233,7 @@ func cleanupDataWindow() {
 	}
 	cleanupList.OnChanged = func(s []string) {
 		var tempList []string
+
 		for i := range s {
 			// Get only the game ID for the selected games
 			tempList = append(tempList, strings.Split(s[i], " ")[0])
@@ -258,18 +259,9 @@ func cleanupDataWindow() {
 						CryoUtils.ErrorLog.Println(err)
 						presentErrorInUI(err, CryoUtils.MainWindow)
 					}
-					CryoUtils.InfoLog.Println("Removing the following content:")
-					for i := range removeList {
-						for j := range possibleLocations {
-							path := filepath.Join(possibleLocations[j], removeList[i])
-							CryoUtils.InfoLog.Println(path)
-							err = os.RemoveAll(path)
-							if err != nil {
-								CryoUtils.ErrorLog.Println(err)
-								presentErrorInUI(err, CryoUtils.MainWindow)
-							}
-						}
-					}
+
+					removeGameData(removeList, possibleLocations)
+
 					dialog.ShowInformation(
 						"Success!",
 						"Process completed!",
@@ -282,15 +274,77 @@ func cleanupDataWindow() {
 			}, w)
 	})
 
+	cleanAllUninstalled := widget.NewButton("Delete All Uninstalled", func() {
+		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\nYou may"+
+			" need to reinstall the game to get them back.",
+			func(b bool) {
+				if !b {
+					w.Close()
+				}
+
+				locations, err := getListOfDataAllDataLocations()
+				if err != nil {
+					CryoUtils.ErrorLog.Println(err)
+					presentErrorInUI(err, CryoUtils.MainWindow)
+				}
+
+				removeGameData(getUninstalledGamesData(), locations)
+
+				dialog.ShowInformation(
+					"Success!",
+					"Process completed!",
+					CryoUtils.MainWindow,
+				)
+				w.Close()
+
+			}, w)
+
+	})
+
 	// Format the window
 	cleanupMain := container.NewGridWithColumns(1, cleanupCard)
-	cleanupButtonBorder := container.NewGridWithColumns(2, cancelButton, cleanupButton)
-	cleanupLayout := container.NewBorder(nil, cleanupButtonBorder, nil, nil, cleanupMain)
+	cleanupButtonsGrid := container.NewGridWithColumns(2, cancelButton, cleanupButton)
+	extraButtonGrid := container.NewGridWithColumns(1, cleanAllUninstalled)
+	footerButtons := container.NewGridWithColumns(1, cleanupButtonsGrid, extraButtonGrid)
+	cleanupLayout := container.NewBorder(nil, footerButtons, nil, nil, cleanupMain)
 	w.SetContent(cleanupLayout)
 	w.Resize(fyne.NewSize(300, 450))
 	w.CenterOnScreen()
 	w.RequestFocus()
 	w.Show()
+}
+
+func getUninstalledGamesData() (uninstalled []string) {
+
+	localGames, err := getLocalGameList()
+	if err != nil {
+		return nil
+	}
+
+	for key, game := range localGames {
+		if game.IsInstalled == false {
+			uninstalled = append(uninstalled, strconv.Itoa(key))
+		}
+	}
+
+	return uninstalled
+
+}
+
+func removeGameData(removeList []string, locations []string) {
+
+	CryoUtils.InfoLog.Println("Removing the following content:")
+	for i := range removeList {
+		for j := range locations {
+			path := filepath.Join(locations[j], removeList[i])
+			CryoUtils.InfoLog.Println(path)
+			err := os.RemoveAll(path)
+			if err != nil {
+				CryoUtils.ErrorLog.Println(err)
+				presentErrorInUI(err, CryoUtils.MainWindow)
+			}
+		}
+	}
 }
 
 func swapSizeWindow() {
