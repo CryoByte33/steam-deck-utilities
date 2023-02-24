@@ -99,6 +99,7 @@ After choosing these options, the Deck will be identical to an unmodified versio
 See [the FAQ page](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/faq.md).
 
 ## What does it do?
+
 See [the tweak explanation page](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/tweak-explanation.md).
 
 ## Troubleshooting
@@ -110,6 +111,11 @@ See [the tweak explanation page](https://github.com/CryoByte33/steam-deck-utilit
     * `/home/deck/.cryo_utilities` is a hidden directory, so ensure that you can view hidden files
 
 If the above doesn't work, please open an issue here or contact in the [Discord](https://discord.gg/ySe8WGVNPv)!
+
+### I have instability in a game after using CryoUtilities' recommended settings
+
+Try rebooting the Deck and trying again, I haven't heard of instability post-reboot, but if you find some please let
+me know!
 
 ### Right-clicking the link to save it doesn't open a dialog box
 
