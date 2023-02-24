@@ -20,7 +20,6 @@ type GameStatus struct {
 func presentErrorInUI(err error, win fyne.Window) {
 	CryoUtils.ErrorLog.Println(err)
 	dialog.ShowError(err, CryoUtils.MainWindow)
-	win.Close()
 }
 
 // Create a CheckGroup of game data to allow for selection.
