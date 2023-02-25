@@ -22,7 +22,7 @@ modules:
         only-arches:
           - aarch64
         url: https://go.dev/dl/go1.20.1.linux-arm64.tar.gz
-        sha256: fc0aa29c933cec8d76f5435d859aaf42249aa08c74eb2d154689ae44c08d23b3
+        sha256: 5e5e2926733595e6f3c5b5ad1089afac11c1490351855e87849d0e7702b1ec2e
       - type: archive
         only-arches:
           - x86_64
@@ -36,11 +36,16 @@ modules:
     sources:
       - type: file
         only-arches:
+          - aarch64
+        url: https://github.com/1player/host-spawn/releases/download/1.4.1/host-spawn-aarch64
+        sha256: 29bff846d72e37093b3fdf7859bae16addd64acc98087f8c059548df3c2273c4
+      - type: file
+        only-arches:
           - x86_64
         url: https://github.com/1player/host-spawn/releases/download/1.4.1/host-spawn-x86_64
         sha256: d81bb6125ec73a9a2e26266c48787367fbcb665d67c2e7fb42217f0981106cf7
     build-commands:
-      - install -D host-spawn-x86_64 /app/bin/host-spawn
+      - install -D host-spawn* /app/bin/host-spawn
   - name: cryo_utilities
     buildsystem: simple    
     build-commands:
