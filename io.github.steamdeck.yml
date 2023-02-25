@@ -1,4 +1,4 @@
-app-id: io.github.steamdeckutilities
+app-id: io.cryobyte.steamdeckutilities
 runtime: org.gnome.Platform
 runtime-version: '43'
 sdk: org.gnome.Sdk
