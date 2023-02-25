@@ -79,3 +79,4 @@ cryo_utilities
 build-dir
 repo
 .flatpak-builder
+/Dockerfile

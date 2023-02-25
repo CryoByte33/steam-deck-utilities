@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -17,7 +18,8 @@ func InitUI() {
 	CryoUtils.App.SetIcon(ResourceIconPng)
 
 	// Show and run the app
-	CryoUtils.MainWindow = fyneApp.NewWindow("CryoUtilities")
+	title := "CryoUtilities " + CurrentVersionNumber
+	CryoUtils.MainWindow = fyneApp.NewWindow(title)
 	CryoUtils.makeUI()
 	CryoUtils.MainWindow.CenterOnScreen()
 	CryoUtils.MainWindow.ShowAndRun()

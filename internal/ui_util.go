@@ -20,7 +20,6 @@ type GameStatus struct {
 func presentErrorInUI(err error, win fyne.Window) {
 	CryoUtils.ErrorLog.Println(err)
 	dialog.ShowError(err, CryoUtils.MainWindow)
-	win.Close()
 }
 
 // Create a CheckGroup of game data to allow for selection.
@@ -59,14 +58,14 @@ func createGameDataList() (*widget.CheckGroup, error) {
 
 		// Crawl the compat path and append the folders
 		// Append if no error, to prevent crashing for users that haven't synced data first.
-		dir, _ := getDirectoryList(compat)
+		dir, _ := getDirectoryList(compat, true)
 		if err == nil {
 			storage = append(storage, dir...)
 		}
 
 		// Crawl the shader path and append the folders
 		// Append if no error, to prevent crashing for users that haven't synced data first.
-		dir, _ = getDirectoryList(shader)
+		dir, _ = getDirectoryList(shader, true)
 		if err == nil {
 			storage = append(storage, dir...)
 		}

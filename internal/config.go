@@ -8,7 +8,7 @@ import (
 var HomeDir = getUserHomeDir()
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
-var CurrentVersionNumber = "2.0.0"
+var CurrentVersionNumber = "2.0.1"
 
 // InstallDirectory Location the program is installed.
 var InstallDirectory = filepath.Join(HomeDir, ".cryo_utilities")
