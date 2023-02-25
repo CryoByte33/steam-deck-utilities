@@ -1,7 +1,7 @@
 app-id: io.cryobyte.steamdeckutilities
-runtime: org.gnome.Platform
-runtime-version: '43'
-sdk: org.gnome.Sdk
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
 command:  launcher.sh
 finish-args:
   - '--share=ipc'
