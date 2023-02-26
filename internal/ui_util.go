@@ -211,7 +211,7 @@ func (app *Config) refreshSwappinessContent() {
 	} else {
 		swappinessStr := fmt.Sprintf("Current Swappiness: %d", swappiness)
 		app.SwappinessText.Text = swappinessStr
-		if strconv.Itoa(swappiness) == RecommendedSwappiness {
+		if strconv.Itoa(swappiness) == TweakList["swappiness"].Recommended {
 			app.SwappinessText.Color = Green
 		} else {
 			app.SwappinessText.Color = Red
@@ -223,7 +223,7 @@ func (app *Config) refreshSwappinessContent() {
 
 func (app *Config) refreshHugePagesContent() {
 	app.InfoLog.Println("Refreshing HugePages data...")
-	if getHugePagesStatus() {
+	if isTweakEnabled("hugepages") {
 		app.HugePagesButton.Text = "Disable HugePages"
 		app.HugePagesText.Color = Green
 	} else {
@@ -236,7 +236,7 @@ func (app *Config) refreshHugePagesContent() {
 
 func (app *Config) refreshShMemContent() {
 	app.InfoLog.Println("Refreshing shmem data...")
-	if getShMemStatus() {
+	if isTweakEnabled("shmem_enabled") {
 		app.ShMemButton.Text = "Disable Shared Memory in THP"
 		app.ShMemText.Color = Green
 	} else {
@@ -250,7 +250,7 @@ func (app *Config) refreshShMemContent() {
 
 func (app *Config) refreshCompactionProactivenessContent() {
 	app.InfoLog.Println("Refreshing compaction proactiveness data...")
-	if getCompactionProactivenessStatus() {
+	if isTweakEnabled("compaction_proactiveness") {
 		app.CompactionProactivenessButton.Text = "Revert Compaction Proactiveness"
 		app.CompactionProactivenessText.Color = Green
 	} else {
@@ -263,7 +263,7 @@ func (app *Config) refreshCompactionProactivenessContent() {
 
 func (app *Config) refreshDefragContent() {
 	app.InfoLog.Println("Refreshing defragmentation data...")
-	if getDefragStatus() {
+	if isTweakEnabled("defrag") {
 		app.DefragButton.Text = "Enable Huge Page Defragmentation"
 		app.DefragText.Color = Green
 	} else {
@@ -276,7 +276,7 @@ func (app *Config) refreshDefragContent() {
 
 func (app *Config) refreshPageLockUnfairnessContent() {
 	app.InfoLog.Println("Refreshing page lock unfairness data...")
-	if getPageLockUnfairnessStatus() {
+	if isTweakEnabled("page_lock_unfairness") {
 		app.PageLockUnfairnessButton.Text = "Revert Page Lock Unfairness"
 		app.PageLockUnfairnessText.Color = Green
 	} else {

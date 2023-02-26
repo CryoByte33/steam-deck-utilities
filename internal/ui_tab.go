@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"strconv"
-	"strings"
 )
 
 // Home tab for "recommended" and "default" buttons
@@ -34,11 +35,11 @@ func (app *Config) homeTab() *fyne.Container {
 
 	actionText := widget.NewLabel(
 		"Swap: " + chosenSize + "GB\n" +
-			"Swappiness: " + RecommendedSwappiness + "\n" +
+			"Swappiness: " + TweakList["swappiness"].Recommended + "\n" +
 			"HugePages: Enabled\n" +
-			"Compaction Proactivenes: " + RecommendedCompactionProactiveness + "\n" +
+			"Compaction Proactivenes: " + TweakList["compaction_proactiveness"].Recommended + "\n" +
 			"HugePage Defragmentation: Disabled\n" +
-			"Page Lock Unfairness: " + RecommendedPageLockUnfairness + "\n" +
+			"Page Lock Unfairness: " + TweakList["page_lock_unfairness"].Recommended + "\n" +
 			"Shared Memory in Huge Pages: Enabled")
 
 	recommendedButton := widget.NewButton("Recommended", func() {
@@ -184,7 +185,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.HugePagesButton = widget.NewButton("Enable HugePages", func() {
 		renewSudoAuth()
-		err := ToggleHugePages()
+		err := ToggleTweak("hugepages")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -193,7 +194,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.ShMemButton = widget.NewButton("Enable Shared Memory in THP", func() {
 		renewSudoAuth()
-		err := ToggleShMem()
+		err := ToggleTweak("shmem")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -202,7 +203,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.CompactionProactivenessButton = widget.NewButton("Set Compaction Proactiveness", func() {
 		renewSudoAuth()
-		err := ToggleCompactionProactiveness()
+		err := ToggleTweak("compaction_proactiveness")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -211,7 +212,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.DefragButton = widget.NewButton("Disable Huge Page Defragmentation", func() {
 		renewSudoAuth()
-		err := ToggleDefrag()
+		err := ToggleTweak("defrag")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -220,7 +221,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.PageLockUnfairnessButton = widget.NewButton("Set Page Lock Unfairness", func() {
 		renewSudoAuth()
-		err := TogglePageLockUnfairness()
+		err := ToggleTweak("page_lock_unfairness")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}

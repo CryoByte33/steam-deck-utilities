@@ -225,9 +225,9 @@ func removeElementFromStringSlice(str string, slice []string) []string {
 
 func getUnitStatus(param string) (string, error) {
 	var output string
-	cmd, err := exec.Command("sudo", "cat", UnitMatrix[param]).Output()
+	cmd, err := exec.Command("sudo", "cat", TweakList[param].Location).Output()
 	if err != nil {
-		CryoUtils.ErrorLog.Println(err)
+		CryoUtils.ErrorLog.Println("Unable to get status of", param, ":", err)
 		return "nil", err
 	}
 	// This is just to get the actual value in units which present as a list.
@@ -248,7 +248,7 @@ func getUnitStatus(param string) (string, error) {
 func writeUnitFile(param string, value string) error {
 	path := filepath.Join(TmpFilesRoot, param+".conf")
 	CryoUtils.InfoLog.Println("Writing", value, "to", path, "to preserve", param, "setting...")
-	contents := strings.ReplaceAll(TemplateUnitFile, "PARAM", UnitMatrix[param])
+	contents := strings.ReplaceAll(TemplateUnitFile, "PARAM", TweakList[param].Location)
 	contents = strings.ReplaceAll(contents, "VALUE", value)
 	err := writeFile(path, contents)
 	if err != nil {
@@ -274,7 +274,7 @@ func setUnitValue(param string, value string) error {
 	// This mess is the only way I could find to push directly to unit files, without requiring
 	// a sudo password on installation to change capabilities.
 	echoCmd := exec.Command("echo", value)
-	teeCmd := exec.Command("sudo", "tee", UnitMatrix[param])
+	teeCmd := exec.Command("sudo", "tee", TweakList[param].Location)
 	reader, writer := io.Pipe()
 	var buf bytes.Buffer
 	echoCmd.Stdout = writer
