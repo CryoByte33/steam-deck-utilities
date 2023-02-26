@@ -224,8 +224,15 @@ func removeElementFromStringSlice(str string, slice []string) []string {
 }
 
 func getUnitStatus(param string) (string, error) {
+	tweak, ok := TweakList[param]
+	// If the tweak isn't in the list, return an error. If you make a typo, this will catch it.
+	if !ok {
+		CryoUtils.ErrorLog.Println("Tweak not in list:", param)
+		return "nil", fmt.Errorf("Tweak not in list")
+	}
+
 	var output string
-	cmd, err := exec.Command("sudo", "cat", TweakList[param].Location).Output()
+	cmd, err := exec.Command("sudo", "cat", tweak.Location).Output()
 	if err != nil {
 		CryoUtils.ErrorLog.Println("Unable to get status of", param, ":", err)
 		return "nil", err
