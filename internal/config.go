@@ -2,6 +2,7 @@ package internal
 
 import (
 	"image/color"
+	"os"
 	"path/filepath"
 )
 
@@ -9,7 +10,7 @@ import (
 var CurrentVersionNumber = "2.0.1"
 
 // InstallDirectory Location the program is installed.
-var InstallDirectory = "/home/deck/.cryo_utilities"
+var InstallDirectory = os.Getenv("HOME") + "/.cryo_utilities"
 
 // LogFilePath Location of the log file
 var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
