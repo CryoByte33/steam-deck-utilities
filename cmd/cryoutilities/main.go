@@ -13,10 +13,10 @@ import (
 )
 
 func main() {
+	// Create the install directory if it doesn't exist
+	os.MkdirAll(internal.InstallDirectory, 0755)
 	// Delete old log file
 	os.Remove(internal.LogFilePath)
-	// Create the Install Directory if it doesn't exist
-	os.MkdirAll(internal.InstallDirectory, 0755)
 	// Create a log file
 	logFile, err := os.OpenFile(internal.LogFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
