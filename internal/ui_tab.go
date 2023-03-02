@@ -263,3 +263,42 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	return full
 }
+
+func (app *Config) vramTab() *fyne.Container {
+	app.VRAMText = canvas.NewText("Current VRAM size: Unknown", Gray)
+
+	// Get VRAM value
+	app.refreshVRAMContent()
+
+	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
+			"2. Press and hold the volume up button, press the power button, then release both\n\n" +
+			"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+	
+	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
+
+
+	textVBox := container.NewVBox(
+		textHowTo,
+		textRecommended,
+		textWarning,
+	)
+
+	vramCard := widget.NewCard("Minimum VRAM", "How to change the minimum VRAM:", textVBox)
+
+	vramBAR := container.NewGridWithColumns(1,
+		container.NewCenter(app.VRAMText))
+	topBar := container.NewVBox(
+		container.NewGridWithRows(1),
+		container.NewGridWithRows(1, container.NewCenter(canvas.NewText("Current Tweak Status:", White))),
+		vramBAR,
+	)
+
+	vramVBOX := container.NewVBox(
+		vramCard,
+	)
+	scroll := container.NewScroll(vramVBOX)
+	full := container.NewBorder(topBar, nil, nil, nil, scroll)
+
+	return full
+}

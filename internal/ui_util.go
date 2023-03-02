@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
@@ -286,6 +285,28 @@ func (app *Config) refreshPageLockUnfairnessContent() {
 	app.PageLockUnfairnessText.Refresh()
 }
 
+func (app *Config) refreshVRAMContent() {
+	app.InfoLog.Println("Refreshing VRAM data...")
+	vram, err := getVRAMValue()
+	if err != nil || vram == 0 {
+		CryoUtils.ErrorLog.Println(err)
+		vramStr := fmt.Sprintf("Current VRAM: Unknown")
+		app.VRAMText.Text = vramStr
+		app.VRAMText.Color = Gray
+	} else {
+		humanVRAMSize :=  getHumanVRAMSize(vram)
+		vramStr := fmt.Sprintf("Current VRAM: %s", humanVRAMSize)
+		app.VRAMText.Text = vramStr
+		if vram == RecommendedVRAM {
+			app.VRAMText.Color = Green
+		} else {
+			app.VRAMText.Color = Red
+		}
+	}
+
+	app.VRAMText.Refresh()
+}
+
 func (app *Config) refreshAllContent() {
 	app.refreshSwapContent()
 	app.refreshSwappinessContent()
@@ -294,4 +315,5 @@ func (app *Config) refreshAllContent() {
 	app.refreshShMemContent()
 	app.refreshDefragContent()
 	app.refreshPageLockUnfairnessContent()
+	app.refreshVRAMContent()
 }

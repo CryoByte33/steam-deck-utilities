@@ -30,6 +30,7 @@ type Config struct {
 	CompactionProactivenessText   *canvas.Text
 	DefragText                    *canvas.Text
 	PageLockUnfairnessText        *canvas.Text
+	VRAMText                      *canvas.Text
 	SteamAPIResponse              map[int]string
 	MainWindow                    fyne.Window
 	SwapResizeProgressBar         *widget.ProgressBar
@@ -44,6 +45,7 @@ type Config struct {
 	CompactionProactivenessButton *widget.Button
 	DefragButton                  *widget.Button
 	PageLockUnfairnessButton      *widget.Button
+	VRAMButton                    *widget.Button
 	UserPassword                  string
 	SwapFileLocation              string
 }
@@ -289,4 +291,15 @@ func setUnitValue(param string, value string) error {
 	io.Copy(os.Stdout, &buf)
 
 	return nil
+}
+
+func getHumanVRAMSize(size int) string {
+	// Converts the VRAM size to human readable format.
+	// The size argument is in MB.
+	text := fmt.Sprintf("%dMB", size)
+	if(size >= 1024) {
+		text = fmt.Sprintf("%dGB", size / 1024)
+	}
+
+	return text
 }

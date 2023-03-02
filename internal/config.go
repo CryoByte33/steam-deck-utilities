@@ -26,6 +26,7 @@ var RecommendedCompactionProactiveness = "0"
 var RecommendedHugePageDefrag = "0"
 var RecommendedPageLockUnfairness = "1"
 var RecommendedShMem = "advise"
+var RecommendedVRAM = 4096
 
 //////////////////////
 // Default Settings //
