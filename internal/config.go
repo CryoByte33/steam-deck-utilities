@@ -2,14 +2,18 @@ package internal
 
 import (
 	"image/color"
+	"os"
 	"path/filepath"
 )
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
 var CurrentVersionNumber = "2.0.1"
 
+// Get home Directory
+var HomeDirectory, _ = os.UserHomeDir()
+
 // InstallDirectory Location the program is installed.
-var InstallDirectory = "/home/deck/.cryo_utilities"
+var InstallDirectory = filepath.Join(HomeDirectory, ".cryo_utilities")
 
 // LogFilePath Location of the log file
 var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
@@ -87,12 +91,6 @@ var White = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 // Swap and swappiness settings //
 //////////////////////////////////
 
-// DefaultSwapFileLocation Default location of the swap file
-var DefaultSwapFileLocation = "/home/swapfile"
-
-// BTRFSSwapFileLocation Location of the swap device when using BTRFS
-var BTRFSSwapFileLocation = "/home/@swapfile/swapfile"
-
 // AvailableSwapSizes A list of swap sizes available to choose from, in GB
 var AvailableSwapSizes = []string{"2", "4", "6", "8", "12", "16", "20", "24", "32"}
 
@@ -110,13 +108,13 @@ var GigabyteMultiplier = 1024 * 1024 * 1024
 ////////////////////////
 
 // LibraryVDFLocation The default location of Steam's library VDF
-var LibraryVDFLocation = "/home/deck/.steam/steam/steamapps/libraryfolders.vdf"
+var LibraryVDFLocation = filepath.Join(HomeDirectory, ".steam/steam/steamapps/libraryfolders.vdf")
 
 // MountDirectory The folder where all external devices are mounts
 var MountDirectory = "/run/media"
 
 // SteamDataRoot The default location where Steam keeps compatdata and shadercache
-var SteamDataRoot = "/home/deck/.local/share/Steam"
+var SteamDataRoot = filepath.Join(HomeDirectory, ".local/share/Steam")
 
 // SteamCompatRoot Generates the full path of the compatdata folder, on SSD
 var SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")
