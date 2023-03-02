@@ -2,12 +2,12 @@ package internal
 
 import (
 	"fmt"
-	"path/filepath"
-	"sort"
-	"strconv"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"path/filepath"
+	"sort"
+	"strconv"
 )
 
 type GameStatus struct {
@@ -32,7 +32,7 @@ func createGameDataList() (*widget.CheckGroup, error) {
 		return nil, err
 	}
 
-	var sortedMap []int
+	sortedMap := make([]int, 0, len(localGames))
 
 	for i := range localGames {
 		// Add each key to the sortedMap slice, so we can sort it afterwards.
@@ -298,11 +298,11 @@ func (app *Config) refreshVRAMContent() {
 	vram, err := getVRAMValue()
 	if err != nil || vram == 0 {
 		CryoUtils.ErrorLog.Println(err)
-		vramStr := fmt.Sprintf("Current VRAM: Unknown")
+		vramStr := "Current VRAM: Unknown"
 		app.VRAMText.Text = vramStr
 		app.VRAMText.Color = Gray
 	} else {
-		humanVRAMSize :=  getHumanVRAMSize(vram)
+		humanVRAMSize := getHumanVRAMSize(vram)
 		vramStr := fmt.Sprintf("Current VRAM: %s", humanVRAMSize)
 		app.VRAMText.Text = vramStr
 		if vram == RecommendedVRAM {

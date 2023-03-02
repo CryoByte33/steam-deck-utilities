@@ -60,7 +60,7 @@ func testAuth(password string) error {
 	}
 	_, err = stdin.Write([]byte(password + "\n"))
 	if err != nil {
-		cmd.Process.Kill()
+		_ = cmd.Process.Kill()
 		return err
 	}
 	stdin.Close()

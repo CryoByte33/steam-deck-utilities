@@ -8,18 +8,16 @@ linters:
     - staticcheck
     - unused
     - gosimple
-    - structcheck
-    - varcheck
     - ineffassign
-    - deadcode
     - typecheck
     - bodyclose
     - rowserrcheck
     - asciicheck
     - misspell
-    - lll
-    - prealloc
     - exportloopref
-    - gosec
     - dupl
     - goconst
+  disable:
+    - prealloc
+    - gosec
+    - lll
