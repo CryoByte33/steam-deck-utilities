@@ -275,8 +275,9 @@ func cleanupDataWindow() {
 	})
 
 	cleanAllUninstalled := widget.NewButton("Delete All Uninstalled", func() {
-		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\nYou may"+
-			" need to reinstall the game to get them back.",
+		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\n"+
+			"Please be sure to back up any Non-Steam-Cloud save games before\n"+
+			"deleting them using this tool, as any selected will be lost.",
 			func(b bool) {
 				if !b {
 					w.Close()
