@@ -369,3 +369,20 @@ func (d *DataToMove) confirmDirectoryStatus(left string, right string) (bool, er
 			"%s", unmoved)
 	}
 }
+
+func getUninstalledGamesData() (uninstalled []string) {
+
+	localGames, err := getLocalGameList()
+	if err != nil {
+		return nil
+	}
+
+	for key, game := range localGames {
+		if key != 0 && key <= SteamGameMaxInteger && !game.IsInstalled {
+			uninstalled = append(uninstalled, strconv.Itoa(key))
+		}
+	}
+
+	return uninstalled
+
+}

@@ -2,7 +2,6 @@ package internal
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -115,15 +114,6 @@ func doesDirectoryExist(path string, directory string) bool {
 		}
 	}
 	return false
-}
-
-func doesFileExist(path string) bool {
-	_, err := os.Stat(path)
-	if errors.Is(err, os.ErrNotExist) {
-		return false
-	} else {
-		return true
-	}
 }
 
 func isSubPath(parent string, sub string) bool {
@@ -294,12 +284,28 @@ func setUnitValue(param string, value string) error {
 }
 
 func getHumanVRAMSize(size int) string {
-	// Converts the VRAM size to human readable format.
+	// Converts the VRAM size to human-readable format.
 	// The size argument is in MB.
 	text := fmt.Sprintf("%dMB", size)
-	if(size >= 1024) {
-		text = fmt.Sprintf("%dGB", size / 1024)
+	if size >= 1024 {
+		text = fmt.Sprintf("%dGB", size/1024)
 	}
 
 	return text
+}
+
+func removeGameData(removeList []string, locations []string) {
+
+	CryoUtils.InfoLog.Println("Removing the following content:")
+	for i := range removeList {
+		for j := range locations {
+			path := filepath.Join(locations[j], removeList[i])
+			CryoUtils.InfoLog.Println(path)
+			err := os.RemoveAll(path)
+			if err != nil {
+				CryoUtils.ErrorLog.Println(err)
+				presentErrorInUI(err, CryoUtils.MainWindow)
+			}
+		}
+	}
 }
