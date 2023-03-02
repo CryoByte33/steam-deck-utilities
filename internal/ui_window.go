@@ -275,62 +275,16 @@ func cleanupDataWindow() {
 			}, w)
 	})
 
-	cleanAllUninstalled := widget.NewButton("Delete All Uninstalled", func() {
-		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\n"+
-			"Please be sure to back up any Non-Steam-Cloud save games before\n"+
-			"deleting them using this tool, as any selected will be lost.",
-			func(b bool) {
-				if !b {
-					w.Close()
-				}
-
-				locations, err := getListOfDataAllDataLocations()
-				if err != nil {
-					CryoUtils.ErrorLog.Println(err)
-					presentErrorInUI(err, CryoUtils.MainWindow)
-				}
-
-				removeGameData(getUninstalledGamesData(), locations)
-
-				dialog.ShowInformation(
-					"Success!",
-					"Process completed!",
-					CryoUtils.MainWindow,
-				)
-				w.Close()
-
-			}, w)
-
-	})
-
 	// Format the window
 	cleanupMain := container.NewGridWithColumns(1, cleanupCard)
 	cleanupButtonsGrid := container.NewGridWithColumns(2, cancelButton, cleanupButton)
-	extraButtonGrid := container.NewGridWithColumns(1, cleanAllUninstalled)
-	footerButtons := container.NewGridWithColumns(1, cleanupButtonsGrid, extraButtonGrid)
+	footerButtons := container.NewGridWithColumns(1, cleanupButtonsGrid)
 	cleanupLayout := container.NewBorder(nil, footerButtons, nil, nil, cleanupMain)
 	w.SetContent(cleanupLayout)
 	w.Resize(fyne.NewSize(300, 450))
 	w.CenterOnScreen()
 	w.RequestFocus()
 	w.Show()
-}
-
-func getUninstalledGamesData() (uninstalled []string) {
-
-	localGames, err := getLocalGameList()
-	if err != nil {
-		return nil
-	}
-
-	for key, game := range localGames {
-		if game.IsInstalled == false {
-			uninstalled = append(uninstalled, strconv.Itoa(key))
-		}
-	}
-
-	return uninstalled
-
 }
 
 func removeGameData(removeList []string, locations []string) {
