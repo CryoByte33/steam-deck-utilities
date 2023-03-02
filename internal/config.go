@@ -7,7 +7,7 @@ import (
 )
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
-var CurrentVersionNumber = "2.0.1"
+var CurrentVersionNumber = "2.1.0"
 
 // Get home Directory
 var HomeDirectory, _ = os.UserHomeDir()
