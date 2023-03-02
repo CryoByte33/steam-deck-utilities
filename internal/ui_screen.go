@@ -12,7 +12,7 @@ import (
 
 const (
 	smallScreen  = 1280
-	mediumScreen = 1980
+	mediumScreen = 1920
 )
 
 const (
