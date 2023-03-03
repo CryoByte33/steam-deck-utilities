@@ -1,3 +1,19 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
@@ -368,4 +384,21 @@ func (d *DataToMove) confirmDirectoryStatus(left string, right string) (bool, er
 		return false, fmt.Errorf("the following directories remain in the incorrect locations:\n"+
 			"%s", unmoved)
 	}
+}
+
+func getUninstalledGamesData() (uninstalled []string) {
+
+	localGames, err := getLocalGameList()
+	if err != nil {
+		return nil
+	}
+
+	for key, game := range localGames {
+		if key != 0 && key <= SteamGameMaxInteger && !game.IsInstalled {
+			uninstalled = append(uninstalled, strconv.Itoa(key))
+		}
+	}
+
+	return uninstalled
+
 }

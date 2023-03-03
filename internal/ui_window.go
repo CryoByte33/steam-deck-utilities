@@ -1,9 +1,23 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -314,39 +328,6 @@ func cleanupDataWindow() {
 	w.CenterOnScreen()
 	w.RequestFocus()
 	w.Show()
-}
-
-func getUninstalledGamesData() (uninstalled []string) {
-
-	localGames, err := getLocalGameList()
-	if err != nil {
-		return nil
-	}
-
-	for key, game := range localGames {
-		if game.IsInstalled == false {
-			uninstalled = append(uninstalled, strconv.Itoa(key))
-		}
-	}
-
-	return uninstalled
-
-}
-
-func removeGameData(removeList []string, locations []string) {
-
-	CryoUtils.InfoLog.Println("Removing the following content:")
-	for i := range removeList {
-		for j := range locations {
-			path := filepath.Join(locations[j], removeList[i])
-			CryoUtils.InfoLog.Println(path)
-			err := os.RemoveAll(path)
-			if err != nil {
-				CryoUtils.ErrorLog.Println(err)
-				presentErrorInUI(err, CryoUtils.MainWindow)
-			}
-		}
-	}
 }
 
 func swapSizeWindow() {
