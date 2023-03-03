@@ -7,6 +7,7 @@ cd "$HOME/.cryo_utilities" || exit 1
 
 # Download checksum to compare with local binary, if present
 wget https://github.com/CryoByte33/steam-deck-utilities/releases/download/latest/cu.md5 -O "$HOME/.cryo_utilities/cu.md5" 2>&1
+sleep 1
 if md5sum -c --quiet cu.md5; then
   zenity --info --text="No update necessary!" --width=300
   exit 0
@@ -48,6 +49,7 @@ for i in {1..3}; do
     zenity --error --text="Install/upgrade of CryoUtilities has failed!\n\nBinary couldn't be downloaded correctly, this may be a network or GitHub issue." --width=500
     exit 1
   fi
+  sleep 1
 done
 
 chmod +x "$HOME/.cryo_utilities/cryo_utilities"
