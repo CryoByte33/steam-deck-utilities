@@ -42,7 +42,7 @@ for i in {1..3}; do
   sleep 1
   # Compare checksum to new binary
   if md5sum -c --quiet cu.md5; then
-    break
+    break 2
   fi
 
   if [ "$i" -ge "3" ]; then
