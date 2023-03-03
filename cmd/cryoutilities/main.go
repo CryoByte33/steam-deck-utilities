@@ -1,5 +1,5 @@
-// Steam Deck Utilities
-// Copyright (C) 2023 CryoByte33 and contributors to the Steam Deck Utilities project
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
