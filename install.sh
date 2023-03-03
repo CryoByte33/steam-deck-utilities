@@ -40,6 +40,8 @@ for i in {1..3}; do
     fi
     sleep 0.1
   done
+
+  sleep 1
   # Compare checksum to new binary
   if md5sum -c --quiet cu.md5; then
     break
@@ -49,7 +51,6 @@ for i in {1..3}; do
     zenity --error --text="Install/upgrade of CryoUtilities has failed!\n\nBinary couldn't be downloaded correctly, this may be a network or GitHub issue." --width=500
     exit 1
   fi
-  sleep 1
 done
 
 chmod +x "$HOME/.cryo_utilities/cryo_utilities"
