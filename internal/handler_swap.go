@@ -52,6 +52,10 @@ func getSwapFileLocation() (string, error) {
 		}
 	}
 
+	if doesFileExist(DefaultSwapFileLocation) {
+		return DefaultSwapFileLocation, nil
+	}
+
 	return "", fmt.Errorf("no swapfile found")
 }
 

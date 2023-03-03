@@ -18,12 +18,12 @@ package internal
 
 import (
 	"fmt"
-	"path/filepath"
-	"sort"
-	"strconv"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"path/filepath"
+	"sort"
+	"strconv"
 )
 
 type GameStatus struct {
@@ -34,7 +34,7 @@ type GameStatus struct {
 // Show an error message over the main window.
 func presentErrorInUI(err error, win fyne.Window) {
 	CryoUtils.ErrorLog.Println(err)
-	dialog.ShowError(err, CryoUtils.MainWindow)
+	dialog.ShowError(err, win)
 }
 
 // Create a CheckGroup of game data to allow for selection.
@@ -212,7 +212,7 @@ func (app *Config) refreshSwapContent() {
 		humanSwapSize := swap / int64(GigabyteMultiplier)
 		swapStr := fmt.Sprintf("Current Swap Size: %dGB", humanSwapSize)
 		app.SwapText.Text = swapStr
-		if swap == RecommendedSwapSizeBytes {
+		if swap >= RecommendedSwapSizeBytes {
 			app.SwapText.Color = Green
 		} else {
 			app.SwapText.Color = Red
@@ -318,7 +318,7 @@ func (app *Config) refreshVRAMContent() {
 		app.VRAMText.Text = vramStr
 		app.VRAMText.Color = Gray
 	} else {
-		humanVRAMSize :=  getHumanVRAMSize(vram)
+		humanVRAMSize := getHumanVRAMSize(vram)
 		vramStr := fmt.Sprintf("Current VRAM: %s", humanVRAMSize)
 		app.VRAMText.Text = vramStr
 		if vram == RecommendedVRAM {
