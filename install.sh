@@ -21,10 +21,8 @@ rm -rf "$HOME/.swap_resizer" &>/dev/null
 rm -rf ~/Desktop/SwapResizerUninstall.desktop &>/dev/null
 rm -rf ~/Desktop/SwapResizer.desktop &>/dev/null
 
-# Remove old files
+# Remove old binary
 rm -f "$HOME/.cryo_utilities/cryo_utilities" &>/dev/null
-rm -f "$HOME/.cryo_utilities/launcher.sh" &>/dev/null
-rm -f "$HOME/.cryo_utilities/cryo-utilities.png" &>/dev/null
 
 # Attempt to download the binary 3 times.
 for i in {1..3}; do
@@ -56,9 +54,15 @@ done
 chmod +x "$HOME/.cryo_utilities/cryo_utilities"
 rm -f cu.md5 &>/dev/null
 
+# Remove old launcher
+rm -f "$HOME/.cryo_utilities/launcher.sh" &>/dev/null
+
 # Install launcher script
 wget https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/launcher.sh -O "$HOME/.cryo_utilities/launcher.sh"
 chmod +x "$HOME/.cryo_utilities/launcher.sh"
+
+# Remove old icon
+rm -f "$HOME/.cryo_utilities/cryo-utilities.png" &>/dev/null
 
 # Install Icon
 wget https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cmd/cryoutilities/Icon.png -O "$HOME/.cryo_utilities/cryo-utilities.png"
