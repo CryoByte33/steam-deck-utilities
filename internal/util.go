@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -114,6 +115,15 @@ func doesDirectoryExist(path string, directory string) bool {
 		}
 	}
 	return false
+}
+
+func doesFileExist(path string) bool {
+	_, err := os.Stat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	} else {
+		return true
+	}
 }
 
 func isSubPath(parent string, sub string) bool {
