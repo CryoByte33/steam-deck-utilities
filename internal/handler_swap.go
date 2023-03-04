@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -27,8 +28,24 @@ import (
 	"github.com/spf13/afero"
 )
 
+// logger is an interface to substitute *log.Logger for unit-tests.
 type logger interface {
 	Println(v ...any)
+}
+
+var _ logger = &log.Logger{}
+
+// execCommander is an interface to substitute exec.Command() for unit-tests.
+type execCommander interface {
+	ExecAndOutput(name string, arg ...string) ([]byte, error)
+}
+
+var _ execCommander = realExecCommander{}
+
+type realExecCommander struct{}
+
+func (c realExecCommander) ExecAndOutput(name string, arg ...string) ([]byte, error) {
+	return exec.Command(name, arg...).Output()
 }
 
 // NewSwap is a constructor for Swap.
@@ -69,6 +86,7 @@ func NewSwap(
 		oldSwappinessUnitFile: oldSwappinessUnitFile,
 		swapFileLocation:      swapFileLocation,
 		fs:                    fs,
+		execCommander:         realExecCommander{},
 		loggerInfo:            loggerInfo,
 	}, nil
 }
@@ -80,6 +98,7 @@ type Swap struct {
 	oldSwappinessUnitFile string
 	swapFileLocation      string
 	fs                    afero.Fs
+	execCommander         execCommander
 	loggerInfo            logger
 }
 
@@ -120,13 +139,21 @@ func getSwapFileLocation(fs afero.Fs, defaultSwapFileLocation string) (string, e
 
 // Get the current swap and swappiness values
 func (s *Swap) getSwappinessValue() (int, error) {
-	cmd, err := exec.Command("sysctl", "vm.swappiness").Output()
+	cmd, err := s.execCommander.ExecAndOutput("sysctl", "vm.swappiness")
 	if err != nil {
-		return 100, fmt.Errorf("error getting current swappiness")
+		return 100, fmt.Errorf("error getting current swappiness: %w", err)
 	}
+
 	output := strings.Fields(string(cmd))
+	if len(output) < 3 {
+		return 100, fmt.Errorf("unexpected swappiness returned: %q", cmd)
+	}
+
+	swappiness, err := strconv.Atoi(output[2])
+	if err != nil {
+		return 100, fmt.Errorf("converting swappiness of %q: %w", cmd, err)
+	}
 	s.loggerInfo.Println("Found a swappiness of", output[2])
-	swappiness, _ := strconv.Atoi(output[2])
 
 	return swappiness, nil
 }
@@ -136,7 +163,7 @@ func (s *Swap) getSwapFileSize() (int64, error) {
 	info, err := s.fs.Stat(s.swapFileLocation)
 	if err != nil {
 		// Don't crash the program, just report the default size
-		return s.defaultSwapSizeBytes, fmt.Errorf("error getting current swap file size")
+		return s.defaultSwapSizeBytes, fmt.Errorf("error getting current swap file size: %w", err)
 	}
 	s.loggerInfo.Println("Found a swap file with a size of", info.Size())
 	return info.Size(), nil
@@ -174,7 +201,7 @@ func (s *Swap) getAvailableSwapSizes() ([]string, error) {
 // Disable swapping completely
 func (s *Swap) disableSwap() error {
 	s.loggerInfo.Println("Disabling swap temporarily...")
-	_, err := exec.Command("sudo", "swapoff", "-a").Output()
+	_, err := s.execCommander.ExecAndOutput("sudo", "swapoff", "-a")
 	if err != nil {
 		return fmt.Errorf("error disabling swap: %w", err)
 	}
@@ -188,7 +215,7 @@ func (s *Swap) resizeSwapFile(size int) error {
 
 	s.loggerInfo.Println("Resizing swap to", size, "GB...")
 	// Use dd to write zeroes, reevaluate using Go directly in the future
-	_, err := exec.Command("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress").Output()
+	_, err := s.execCommander.ExecAndOutput("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress")
 	if err != nil {
 		return fmt.Errorf("error resizing %s: %w", s.swapFileLocation, err)
 	}
@@ -198,7 +225,7 @@ func (s *Swap) resizeSwapFile(size int) error {
 // Set swap permissions to a valid value.
 func (s *Swap) setSwapPermissions() error {
 	s.loggerInfo.Println("Setting permissions on", s.swapFileLocation, "to 0600...")
-	_, err := exec.Command("sudo", "chmod", "600", s.swapFileLocation).Output()
+	_, err := s.execCommander.ExecAndOutput("sudo", "chmod", "600", s.swapFileLocation)
 	if err != nil {
 		return fmt.Errorf("error setting permissions on %s: %w", s.swapFileLocation, err)
 	}
@@ -208,11 +235,11 @@ func (s *Swap) setSwapPermissions() error {
 // Enable swapping on the newly resized file.
 func (s *Swap) initNewSwapFile() error {
 	s.loggerInfo.Println("Enabling swap on", s.swapFileLocation, "...")
-	_, err := exec.Command("sudo", "mkswap", s.swapFileLocation).Output()
+	_, err := s.execCommander.ExecAndOutput("sudo", "mkswap", s.swapFileLocation)
 	if err != nil {
 		return fmt.Errorf("error creating swap on %s: %w", s.swapFileLocation, err)
 	}
-	_, err = exec.Command("sudo", "swapon", s.swapFileLocation).Output()
+	_, err = s.execCommander.ExecAndOutput("sudo", "swapon", s.swapFileLocation)
 	if err != nil {
 		return fmt.Errorf("error enabling swap on %s: %w", s.swapFileLocation, err)
 	}
