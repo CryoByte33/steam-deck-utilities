@@ -20,10 +20,11 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/spf13/afero"
 )
 
 type logger interface {
@@ -36,6 +37,7 @@ func NewSwap(
 	availableSwapSizes []string,
 	oldSwappinessUnitFile string,
 	defaultSwapFileLocation string,
+	fs afero.Fs,
 	loggerInfo logger,
 ) (*Swap, error) {
 	if defaultSwapSizeBytes == 0 {
@@ -53,7 +55,10 @@ func NewSwap(
 	if defaultSwapFileLocation == "" {
 		return nil, errors.New("default swap location is required")
 	}
-	swapFileLocation, err := getSwapFileLocation(defaultSwapFileLocation)
+	if fs == nil {
+		return nil, errors.New("fs is required")
+	}
+	swapFileLocation, err := getSwapFileLocation(fs, defaultSwapFileLocation)
 	if err != nil {
 		return nil, fmt.Errorf("getting swapfile location: %w", err)
 	}
@@ -63,6 +68,7 @@ func NewSwap(
 		availableSwapSizes:    availableSwapSizes,
 		oldSwappinessUnitFile: oldSwappinessUnitFile,
 		swapFileLocation:      swapFileLocation,
+		fs:                    fs,
 		loggerInfo:            loggerInfo,
 	}, nil
 }
@@ -73,6 +79,7 @@ type Swap struct {
 	availableSwapSizes    []string
 	oldSwappinessUnitFile string
 	swapFileLocation      string
+	fs                    afero.Fs
 	loggerInfo            logger
 }
 
@@ -80,8 +87,9 @@ type Swap struct {
 // Sample output:
 // Filename				Type		Size	Used	Priority
 // /home/swapfile			file		8388604	0	-2
-func getSwapFileLocation(defaultSwapFileLocation string) (string, error) {
-	file, err := os.Open("/proc/swaps")
+func getSwapFileLocation(fs afero.Fs, defaultSwapFileLocation string) (string, error) {
+	filepath := "/proc/swaps"
+	file, err := fs.Open(filepath)
 	if err != nil {
 		return "", err
 	}
@@ -97,7 +105,7 @@ func getSwapFileLocation(defaultSwapFileLocation string) (string, error) {
 			location := fields[0]
 			// If swapfile is a partition then return no swapfile found
 			if strings.HasPrefix(location, "/dev/") {
-				return "", fmt.Errorf("no swapfile found")
+				return "", fmt.Errorf("no swapfile found in %s", filepath)
 			}
 			return location, nil
 		}
@@ -107,7 +115,7 @@ func getSwapFileLocation(defaultSwapFileLocation string) (string, error) {
 		return defaultSwapFileLocation, nil
 	}
 
-	return "", fmt.Errorf("no swapfile found")
+	return "", fmt.Errorf("no swapfile found in %s", filepath)
 }
 
 // Get the current swap and swappiness values
@@ -125,7 +133,7 @@ func (s *Swap) getSwappinessValue() (int, error) {
 
 // Get current swap file size, in bytes.
 func (s *Swap) getSwapFileSize() (int64, error) {
-	info, err := os.Stat(s.swapFileLocation)
+	info, err := s.fs.Stat(s.swapFileLocation)
 	if err != nil {
 		// Don't crash the program, just report the default size
 		return s.defaultSwapSizeBytes, fmt.Errorf("error getting current swap file size")

@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/afero"
+
 	"cryoutilities/internal"
 
 	"github.com/cristalhq/acmd"
@@ -47,11 +49,15 @@ func main() {
 	// Print the current version as a test
 	internal.CryoUtils.InfoLog.Println("Current Version:", internal.CurrentVersionNumber)
 
+	// it is used to be replaced in unit-tests
+	appFs := afero.NewOsFs()
+
 	swap, err := internal.NewSwap(
 		internal.DefaultSwapSizeBytes,
 		internal.AvailableSwapSizes,
 		internal.OldSwappinessUnitFile,
 		internal.DefaultSwapFileLocation,
+		appFs,
 		internal.CryoUtils.InfoLog,
 	)
 	if err != nil {
