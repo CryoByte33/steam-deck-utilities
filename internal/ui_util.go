@@ -18,12 +18,13 @@ package internal
 
 import (
 	"fmt"
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/widget"
 	"path/filepath"
 	"sort"
 	"strconv"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 )
 
 type GameStatus struct {
@@ -200,19 +201,19 @@ func getDataToMoveUI(data DataToMove) (*widget.List, *widget.List, error) {
 	return leftList, rightList, nil
 }
 
-func (app *Config) refreshSwapContent() {
+func (app *Config) refreshSwapContent(swap *Swap) {
 	app.InfoLog.Println("Refreshing Swap data...")
-	swap, err := getSwapFileSize()
+	swapSize, err := swap.getSwapFileSize()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 		swapStr := "Current Swap Size: Unknown"
 		app.SwapText.Text = swapStr
 		app.SwapText.Color = Gray
 	} else {
-		humanSwapSize := swap / int64(GigabyteMultiplier)
+		humanSwapSize := swapSize / int64(GigabyteMultiplier)
 		swapStr := fmt.Sprintf("Current Swap Size: %dGB", humanSwapSize)
 		app.SwapText.Text = swapStr
-		if swap >= RecommendedSwapSizeBytes {
+		if swapSize >= RecommendedSwapSizeBytes {
 			app.SwapText.Color = Green
 		} else {
 			app.SwapText.Color = Red
@@ -222,9 +223,9 @@ func (app *Config) refreshSwapContent() {
 	app.SwapText.Refresh()
 }
 
-func (app *Config) refreshSwappinessContent() {
+func (app *Config) refreshSwappinessContent(swap *Swap) {
 	app.InfoLog.Println("Refreshing Swappiness data...")
-	swappiness, err := getSwappinessValue()
+	swappiness, err := swap.getSwappinessValue()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 		swappinessStr := "Current Swappiness: Unknown"
@@ -331,9 +332,9 @@ func (app *Config) refreshVRAMContent() {
 	app.VRAMText.Refresh()
 }
 
-func (app *Config) refreshAllContent() {
-	app.refreshSwapContent()
-	app.refreshSwappinessContent()
+func (app *Config) refreshAllContent(swap *Swap) {
+	app.refreshSwapContent(swap)
+	app.refreshSwappinessContent(swap)
 	app.refreshHugePagesContent()
 	app.refreshCompactionProactivenessContent()
 	app.refreshShMemContent()
