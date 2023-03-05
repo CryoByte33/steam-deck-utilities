@@ -204,7 +204,7 @@ func getListOfDataAllDataLocations() ([]string, error) {
 	for x := range drives {
 		if drives[x] == SteamDataRoot {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
-			possibleLocations = append(possibleLocations, SteamDataRoot)
+			possibleLocations = append(possibleLocations, SteamShaderRoot)
 		} else {
 			compat := filepath.Join(drives[x], ExternalCompatRoot)
 			shader := filepath.Join(drives[x], ExternalShaderRoot)
