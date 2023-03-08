@@ -29,6 +29,8 @@ import (
 
 func InitUI() {
 	// Create a Fyne application
+	screenSizer := NewScreenSizer()
+	screenSizer.UpdateScaleForActiveMonitor()
 	fyneApp := app.NewWithID("io.cryobyte.cryoutilities")
 	CryoUtils.App = fyneApp
 	CryoUtils.App.SetIcon(ResourceIconPng)
