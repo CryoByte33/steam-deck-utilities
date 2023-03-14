@@ -1,3 +1,19 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
@@ -260,6 +276,45 @@ func (app *Config) memoryTab() *fyne.Container {
 		pageLockUnfairnessCard,
 	)
 	scroll := container.NewScroll(memoryVBox)
+	full := container.NewBorder(topBar, nil, nil, nil, scroll)
+
+	return full
+}
+
+func (app *Config) vramTab() *fyne.Container {
+	app.VRAMText = canvas.NewText("Current VRAM size: Unknown", Gray)
+
+	// Get VRAM value
+	app.refreshVRAMContent()
+
+	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
+			"2. Press and hold the volume up button, press the power button, then release both\n\n" +
+			"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+	
+	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
+
+
+	textVBox := container.NewVBox(
+		textHowTo,
+		textRecommended,
+		textWarning,
+	)
+
+	vramCard := widget.NewCard("Minimum VRAM", "How to change the minimum VRAM:", textVBox)
+
+	vramBAR := container.NewGridWithColumns(1,
+		container.NewCenter(app.VRAMText))
+	topBar := container.NewVBox(
+		container.NewGridWithRows(1),
+		container.NewGridWithRows(1, container.NewCenter(canvas.NewText("Current Tweak Status:", White))),
+		vramBAR,
+	)
+
+	vramVBOX := container.NewVBox(
+		vramCard,
+	)
+	scroll := container.NewScroll(vramVBOX)
 	full := container.NewBorder(topBar, nil, nil, nil, scroll)
 
 	return full
