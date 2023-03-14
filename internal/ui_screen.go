@@ -53,8 +53,10 @@ func NewScreenSizer() *ScreenSizer {
 }
 
 func getDefaultScreen() screen {
+
 	display := C.XOpenDisplay(nil)
 	if display == nil {
+		CryoUtils.InfoLog.Println("Can't get info on display")
 		return screen{name: defaultScreenName, width: defaultSteamDeckScreenWidth, height: defaultSteamDeckScreenHeight}
 	}
 	defer C.XCloseDisplay(display)
@@ -64,6 +66,7 @@ func getDefaultScreen() screen {
 	width := int(C.XWidthOfScreen(displayScreen))
 	height := int(C.XHeightOfScreen(displayScreen))
 	if width == 0 || height == 0 {
+		CryoUtils.InfoLog.Println("Default monitor not detected")
 		return screen{name: defaultScreenName, width: defaultSteamDeckScreenWidth, height: defaultSteamDeckScreenHeight}
 	}
 	return screen{displayScreenName, width, height}
@@ -83,6 +86,7 @@ func (s ScreenSizer) UpdateScaleForActiveMonitor() {
 
 func (s ScreenSizer) setScale(f float32) {
 	err := os.Setenv(scaleEnvKey, fmt.Sprintf("%f", f))
+	CryoUtils.InfoLog.Printf("Setting scale %f", f)
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 	}
