@@ -1,3 +1,19 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
@@ -30,6 +46,7 @@ type Config struct {
 	CompactionProactivenessText   *canvas.Text
 	DefragText                    *canvas.Text
 	PageLockUnfairnessText        *canvas.Text
+	VRAMText                      *canvas.Text
 	SteamAPIResponse              map[int]string
 	MainWindow                    fyne.Window
 	SwapResizeProgressBar         *widget.ProgressBar
@@ -44,6 +61,7 @@ type Config struct {
 	CompactionProactivenessButton *widget.Button
 	DefragButton                  *widget.Button
 	PageLockUnfairnessButton      *widget.Button
+	VRAMButton                    *widget.Button
 	UserPassword                  string
 	SwapFileLocation              string
 }
@@ -186,7 +204,7 @@ func getListOfDataAllDataLocations() ([]string, error) {
 	for x := range drives {
 		if drives[x] == SteamDataRoot {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
-			possibleLocations = append(possibleLocations, SteamDataRoot)
+			possibleLocations = append(possibleLocations, SteamShaderRoot)
 		} else {
 			compat := filepath.Join(drives[x], ExternalCompatRoot)
 			shader := filepath.Join(drives[x], ExternalShaderRoot)
@@ -293,6 +311,33 @@ func setUnitValue(param string, value string) error {
 	io.Copy(os.Stdout, &buf)
 
 	return nil
+}
+
+func getHumanVRAMSize(size int) string {
+	// Converts the VRAM size to human-readable format.
+	// The size argument is in MB.
+	text := fmt.Sprintf("%dMB", size)
+	if size >= 1024 {
+		text = fmt.Sprintf("%dGB", size/1024)
+	}
+
+	return text
+}
+
+func removeGameData(removeList []string, locations []string) {
+
+	CryoUtils.InfoLog.Println("Removing the following content:")
+	for i := range removeList {
+		for j := range locations {
+			path := filepath.Join(locations[j], removeList[i])
+			CryoUtils.InfoLog.Println(path)
+			err := os.RemoveAll(path)
+			if err != nil {
+				CryoUtils.ErrorLog.Println(err)
+				presentErrorInUI(err, CryoUtils.MainWindow)
+			}
+		}
+	}
 }
 
 func setUnitValueWithinFlatpak(param string, value string) error {

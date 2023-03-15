@@ -1,9 +1,23 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -233,6 +247,7 @@ func cleanupDataWindow() {
 	}
 	cleanupList.OnChanged = func(s []string) {
 		var tempList []string
+
 		for i := range s {
 			// Get only the game ID for the selected games
 			tempList = append(tempList, strings.Split(s[i], " ")[0])
@@ -249,8 +264,9 @@ func cleanupDataWindow() {
 		w.Close()
 	})
 	cleanupButton = widget.NewButton("Delete Selected", func() {
-		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\nYou may"+
-			" need to reinstall the game to get them back.",
+		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\n"+
+			"Please be sure to back up any Non-Steam-Cloud save games before\n"+
+			"deleting them using this tool, as any selected will be lost.",
 			func(b bool) {
 				if b {
 					possibleLocations, err := getListOfDataAllDataLocations()
@@ -258,18 +274,9 @@ func cleanupDataWindow() {
 						CryoUtils.ErrorLog.Println(err)
 						presentErrorInUI(err, CryoUtils.MainWindow)
 					}
-					CryoUtils.InfoLog.Println("Removing the following content:")
-					for i := range removeList {
-						for j := range possibleLocations {
-							path := filepath.Join(possibleLocations[j], removeList[i])
-							CryoUtils.InfoLog.Println(path)
-							err = os.RemoveAll(path)
-							if err != nil {
-								CryoUtils.ErrorLog.Println(err)
-								presentErrorInUI(err, CryoUtils.MainWindow)
-							}
-						}
-					}
+
+					removeGameData(removeList, possibleLocations)
+
 					dialog.ShowInformation(
 						"Success!",
 						"Process completed!",
@@ -282,10 +289,40 @@ func cleanupDataWindow() {
 			}, w)
 	})
 
+	cleanAllUninstalled := widget.NewButton("Delete All Uninstalled", func() {
+		dialog.ShowConfirm("Are you sure?", "Are you sure you want to delete these files?\n\n"+
+			"Please be sure to back up any Non-Steam-Cloud save games before\n"+
+			"deleting them using this tool, as any selected will be lost.",
+			func(b bool) {
+				if !b {
+					w.Close()
+				}
+
+				locations, err := getListOfDataAllDataLocations()
+				if err != nil {
+					CryoUtils.ErrorLog.Println(err)
+					presentErrorInUI(err, CryoUtils.MainWindow)
+				}
+
+				removeGameData(getUninstalledGamesData(), locations)
+
+				dialog.ShowInformation(
+					"Success!",
+					"Process completed!",
+					CryoUtils.MainWindow,
+				)
+				w.Close()
+
+			}, w)
+
+	})
+
 	// Format the window
 	cleanupMain := container.NewGridWithColumns(1, cleanupCard)
-	cleanupButtonBorder := container.NewGridWithColumns(2, cancelButton, cleanupButton)
-	cleanupLayout := container.NewBorder(nil, cleanupButtonBorder, nil, nil, cleanupMain)
+	cleanupButtonsGrid := container.NewGridWithColumns(2, cancelButton, cleanupButton)
+	extraButtonGrid := container.NewGridWithColumns(1, cleanAllUninstalled)
+	footerButtons := container.NewGridWithColumns(1, cleanupButtonsGrid, extraButtonGrid)
+	cleanupLayout := container.NewBorder(nil, footerButtons, nil, nil, cleanupMain)
 	w.SetContent(cleanupLayout)
 	w.Resize(fyne.NewSize(300, 450))
 	w.CenterOnScreen()

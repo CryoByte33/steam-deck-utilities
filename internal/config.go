@@ -1,17 +1,37 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
 	"image/color"
+	"os"
 	"path/filepath"
 )
 
 var HomeDir = getUserHomeDir()
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
-var CurrentVersionNumber = "2.0.1"
+var CurrentVersionNumber = "2.1.4"
+
+// Get home Directory
+var HomeDirectory, _ = os.UserHomeDir()
 
 // InstallDirectory Location the program is installed.
-var InstallDirectory = filepath.Join(HomeDir, ".cryo_utilities")
+var InstallDirectory = filepath.Join(HomeDirectory, ".cryo_utilities")
 
 // LogFilePath Location of the log file
 var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
@@ -28,11 +48,13 @@ var RecommendedCompactionProactiveness = "0"
 var RecommendedHugePageDefrag = "0"
 var RecommendedPageLockUnfairness = "1"
 var RecommendedShMem = "advise"
+var RecommendedVRAM = 4096
 
 //////////////////////
 // Default Settings //
 //////////////////////
 
+var DefaultSwapFileLocation = "/home/swapfile"
 var DefaultSwapSize = 1
 var DefaultSwapSizeBytes = int64(DefaultSwapSize * GigabyteMultiplier)
 var DefaultSwappiness = "100"
@@ -88,12 +110,6 @@ var White = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 // Swap and swappiness settings //
 //////////////////////////////////
 
-// DefaultSwapFileLocation Default location of the swap file
-var DefaultSwapFileLocation = "/home/swapfile"
-
-// BTRFSSwapFileLocation Location of the swap device when using BTRFS
-var BTRFSSwapFileLocation = "/home/@swapfile/swapfile"
-
 // AvailableSwapSizes A list of swap sizes available to choose from, in GB
 var AvailableSwapSizes = []string{"2", "4", "6", "8", "12", "16", "20", "24", "32"}
 
@@ -111,13 +127,13 @@ var GigabyteMultiplier = 1024 * 1024 * 1024
 ////////////////////////
 
 // LibraryVDFLocation The default location of Steam's library VDF
-var LibraryVDFLocation = filepath.Join(HomeDir, ".steam/steam/steamapps/libraryfolders.vdf")
+var LibraryVDFLocation = filepath.Join(HomeDirectory, ".steam/steam/steamapps/libraryfolders.vdf")
 
 // MountDirectory The folder where all external devices are mounts
 var MountDirectory = "/run/media"
 
 // SteamDataRoot The default location where Steam keeps compatdata and shadercache
-var SteamDataRoot = filepath.Join(HomeDir, ".local/share/Steam")
+var SteamDataRoot = filepath.Join(HomeDirectory, ".local/share/Steam")
 
 // SteamCompatRoot Generates the full path of the compatdata folder, on SSD
 var SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")

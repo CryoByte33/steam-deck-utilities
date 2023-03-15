@@ -80,3 +80,4 @@ build-dir
 repo
 .flatpak-builder
 /Dockerfile
+/build

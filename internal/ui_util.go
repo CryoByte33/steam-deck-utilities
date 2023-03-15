@@ -1,14 +1,29 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
 	"fmt"
-	"path/filepath"
-	"sort"
-	"strconv"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"path/filepath"
+	"sort"
+	"strconv"
 )
 
 type GameStatus struct {
@@ -19,7 +34,7 @@ type GameStatus struct {
 // Show an error message over the main window.
 func presentErrorInUI(err error, win fyne.Window) {
 	CryoUtils.ErrorLog.Println(err)
-	dialog.ShowError(err, CryoUtils.MainWindow)
+	dialog.ShowError(err, win)
 }
 
 // Create a CheckGroup of game data to allow for selection.
@@ -28,6 +43,49 @@ func createGameDataList() (*widget.CheckGroup, error) {
 	cleanupList.Enable()
 	cleanupList.Refresh()
 
+	localGames, err := getLocalGameList()
+	if err != nil {
+		return nil, err
+	}
+
+	var sortedMap []int
+
+	for i := range localGames {
+		// Add each key to the sortedMap slice, so we can sort it afterwards.
+		sortedMap = append(sortedMap, i)
+	}
+	// Sort the slice
+	sort.Ints(sortedMap)
+
+	// For each entry in the completed list, add an entry to the check group to return
+	for key := range sortedMap {
+		// Skips non-game prefixes
+		if sortedMap[key] == 0 || sortedMap[key] >= SteamGameMaxInteger {
+			continue
+		}
+
+		var optionStr string
+		var gameStr string
+
+		// If the game name is known, use that, otherwise ???.
+		if localGames[sortedMap[key]].GameName != "" {
+			gameStr = localGames[sortedMap[key]].GameName
+		} else {
+			gameStr = "???"
+		}
+
+		if localGames[sortedMap[key]].IsInstalled {
+			optionStr = fmt.Sprintf("%d - %s - Installed", sortedMap[key], gameStr)
+		} else {
+			optionStr = fmt.Sprintf("%d - %s - Not Installed", sortedMap[key], gameStr)
+		}
+		cleanupList.Append(optionStr)
+	}
+
+	return cleanupList, nil
+}
+
+func getLocalGameList() (map[int]GameStatus, error) {
 	// Use the cached API Response if already present
 	if CryoUtils.SteamAPIResponse == nil {
 		// Make a map of all games stored in the steam API
@@ -93,42 +151,7 @@ func createGameDataList() (*widget.CheckGroup, error) {
 			}
 		}
 	}
-
-	var sortedMap []int
-
-	for i := range localGames {
-		// Add each key to the sortedMap slice, so we can sort it afterwards.
-		sortedMap = append(sortedMap, i)
-	}
-	// Sort the slice
-	sort.Ints(sortedMap)
-
-	// For each entry in the completed list, add an entry to the check group to return
-	for key := range sortedMap {
-		// Skips non-game prefixes
-		if sortedMap[key] == 0 || sortedMap[key] >= SteamGameMaxInteger {
-			continue
-		}
-
-		var optionStr string
-		var gameStr string
-
-		// If the game name is known, use that, otherwise ???.
-		if localGames[sortedMap[key]].GameName != "" {
-			gameStr = localGames[sortedMap[key]].GameName
-		} else {
-			gameStr = "???"
-		}
-
-		if localGames[sortedMap[key]].IsInstalled {
-			optionStr = fmt.Sprintf("%d - %s - Installed", sortedMap[key], gameStr)
-		} else {
-			optionStr = fmt.Sprintf("%d - %s - Not Installed", sortedMap[key], gameStr)
-		}
-		cleanupList.Append(optionStr)
-	}
-
-	return cleanupList, nil
+	return localGames, nil
 }
 
 // Get data to move values as canvas elements.
@@ -189,7 +212,7 @@ func (app *Config) refreshSwapContent() {
 		humanSwapSize := swap / int64(GigabyteMultiplier)
 		swapStr := fmt.Sprintf("Current Swap Size: %dGB", humanSwapSize)
 		app.SwapText.Text = swapStr
-		if swap == RecommendedSwapSizeBytes {
+		if swap >= RecommendedSwapSizeBytes {
 			app.SwapText.Color = Green
 		} else {
 			app.SwapText.Color = Red
@@ -286,6 +309,28 @@ func (app *Config) refreshPageLockUnfairnessContent() {
 	app.PageLockUnfairnessText.Refresh()
 }
 
+func (app *Config) refreshVRAMContent() {
+	app.InfoLog.Println("Refreshing VRAM data...")
+	vram, err := getVRAMValue()
+	if err != nil || vram == 0 {
+		CryoUtils.ErrorLog.Println(err)
+		vramStr := fmt.Sprintf("Current VRAM: Unknown")
+		app.VRAMText.Text = vramStr
+		app.VRAMText.Color = Gray
+	} else {
+		humanVRAMSize := getHumanVRAMSize(vram)
+		vramStr := fmt.Sprintf("Current VRAM: %s", humanVRAMSize)
+		app.VRAMText.Text = vramStr
+		if vram == RecommendedVRAM {
+			app.VRAMText.Color = Green
+		} else {
+			app.VRAMText.Color = Red
+		}
+	}
+
+	app.VRAMText.Refresh()
+}
+
 func (app *Config) refreshAllContent() {
 	app.refreshSwapContent()
 	app.refreshSwappinessContent()
@@ -294,4 +339,5 @@ func (app *Config) refreshAllContent() {
 	app.refreshShMemContent()
 	app.refreshDefragContent()
 	app.refreshPageLockUnfairnessContent()
+	app.refreshVRAMContent()
 }
