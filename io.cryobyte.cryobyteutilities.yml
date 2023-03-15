@@ -1,4 +1,4 @@
-app-id: io.cryobyte.steamdeckutilities
+app-id: io.cryobyte.cryobyteutilities
 runtime: org.freedesktop.Platform
 runtime-version: '22.08'
 sdk: org.freedesktop.Sdk

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.cryobyte.cryobyteutilities</id>
+  
+  <name>Cryobyte Utilities</name>
+  <summary>A tool used enhancing video game performance on Linux. Designed primarily for the Steam Deck, but is usable on multiple Linux Distibutions.</summary>
+
+  <developer_name>Cryobyte33</developer_name>
+  
+  <metadata_license>GPLv3</metadata_license>
+  <project_license>GPLv3</project_license>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="2.0-56" date="2023-03-14"/>
+  </releases>
+
+  <url type="homepage">https://github.com/CryoByte33/steam-deck-utilities</url>
+  <url type="bugtracker">https://github.com/CryoByte33/steam-deck-utilities/issues</url>
+
+  <keywords>
+    <keyword>videogames</keyword>
+    <keyword>performance</keyword>
+    <keyword>cryobyte</keyword>
+    <keyword>games</keyword>
+  </keywords>
+  
+  <description>
+    <p>
+      # Cryobyte Utilities is a game performance enhancher for Linux. This application is designed primarily for the Steam Deck, however it will work on other distributions on a "best-effort" basis.
+    </p>
+    <p>
+      Written by Cryobyte33, this application fine tunes Linux system settings for gaming performance. 
+    </p>
+    <p>
+      Key Features:
+    </p>
+    <p> 
+        One-click set-to-recommended settings
+        One-click revert-to-stock settings
+        Swap Tuner
+            Swap File Resizer + Recovery
+            Swappiness Changer
+        Memory Parameter Tuning
+            HugePages Toggle
+            Compaction Proactiveness Changer
+            HugePage Defragmentation Toggle
+            Page Lock Unfairness Changer
+            Shared Memory (shmem) Toggle
+        Storage Manager
+            Sync shadercache and compatdata to the same location the game is installed
+            Delete shadercache and compatdata for whichever games you select
+                NEW Delete the shadercache and compatdata for all uninstalled games with a single click
+        Full CLI mode
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">io.cryobyte.cryobyteutilities.desktop</launchable>
+  <screenshots>
+    <!-- <screenshot type="default">
+      <image>@TODO</image>
+    </screenshot> -->
+    <!-- <screenshot>
+      <image>@TODO</image>
+    </screenshot> -->
+  </screenshots>
+</component>
