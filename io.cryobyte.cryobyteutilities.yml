@@ -53,9 +53,9 @@ modules:
       - install -D cryo_utilities /app/bin/cryo_utilities
       - install -D launcher.sh /app/bin/launcher.sh
       - mkdir -p /app/share/applications/
-      - install -D ./icon.png /app/share/icons/hicolor/512x512/apps/io.cryobyte.cryobyteutilities.png
+      - install -D ./cmd/cryoutilities/Icon.png /app/share/icons/hicolor/512x512/apps/io.cryobyte.cryobyteutilities.png
       - install -D ./io.cryobyte.cryobyteutilities.desktop /app/share/applications/io.cryobyte.cryobyteutilities.desktop
-      - install -Dm644 ./io.cryobyte.cryobyteutilities.desktop /app/share/appdata/io.cryobyte.cryobyteutilities.metainfo.xml
+      - install -Dm644 ./io.cryobyte.cryobyteutilities.appdata.xml /app/share/appdata/io.cryobyte.cryobyteutilities.metainfo.xml
     sources:
       - type: git
         path: .

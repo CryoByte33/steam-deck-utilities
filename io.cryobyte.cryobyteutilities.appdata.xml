@@ -7,8 +7,8 @@
 
   <developer_name>Cryobyte33</developer_name>
   
-  <metadata_license>GPLv3</metadata_license>
-  <project_license>GPLv3</project_license>
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0+</project_license>
   <content_rating type="oars-1.1" />
   <releases>
     <release version="2.0-56" date="2023-03-14"/>
@@ -56,9 +56,9 @@
   
   <launchable type="desktop-id">io.cryobyte.cryobyteutilities.desktop</launchable>
   <screenshots>
-    <!-- <screenshot type="default">
-      <image>@TODO</image>
-    </screenshot> -->
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/cmd/cryoutilities/Icon.png</image>
+    </screenshot>
     <!-- <screenshot>
       <image>@TODO</image>
     </screenshot> -->
