@@ -63,10 +63,15 @@ for examples on how to use this and what performance you can expect.
 
 ## Install
 
+### Simple
+
 [Download this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop)
 to your desktop (right click and save file) on your Steam Deck, then double-click it.
 
 This will install the program, create desktop icons, and create menu entries.
+
+### Manual
+See [manual-install.md](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/manual-install.md).
 
 ## Usage
 
