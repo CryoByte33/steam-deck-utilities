@@ -55,7 +55,7 @@ jobs:
         run: md5sum cryo_utilities > cu.md5
 
       - name: Delete Previous Latest Release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
           tag_name: latest
           delete_release: true
