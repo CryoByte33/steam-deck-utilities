@@ -71,7 +71,13 @@ to your desktop (right click and save file) on your Steam Deck, then double-clic
 This will install the program, create desktop icons, and create menu entries.
 
 ### Manual
+
 See [manual-install.md](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/manual-install.md).
+
+### Offline/Firewalled
+
+In case you're in a firewalled country like China, please see [this post on my website](https://cryobyte.io/posts/2023/03/cryoutilities-offline-installation/)
+for install directions and a non-GitHub download link.
 
 ## Usage
 
