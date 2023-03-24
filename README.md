@@ -1,43 +1,83 @@
 # CryoUtilities
 
-Scripts and utilities to improve performance and manage storage on the Steam Deck.
+Scripts and utilities to improve performance and manage storage on the Steam Deck. (May work with other Linux distros.)
 
-[![Watch me on YouTube:](https://img.shields.io/youtube/channel/subscribers/UCJ2wc4hCWI8bEki48Zv45fQ?color=%23FF0000&label=Subscribe%20on%20YouTube&style=flat-square)](https://www.youtube.com/@cryobyte33) [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dcryobyte33%26type%3Dpatrons&style=flat)](https://patreon.com/cryobyte33)
+[![Watch me on YouTube:](https://img.shields.io/youtube/channel/subscribers/UCJ2wc4hCWI8bEki48Zv45fQ?color=%23FF0000&label=Subscribe%20on%20YouTube&style=flat-square)](https://www.youtube.com/@cryobyte33) 
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dcryobyte33%26type%3Dpatrons&style=flat)](https://patreon.com/cryobyte33)
 
 ## Update
 
-Major update! The entire project has been rewritten in Go, and now contains more functionality!
+### General Linux Compatibility
+As of the latest update, this _should_ be compatible with most Linux systems, with the following limitations:
+1. This will not operate on swap partitions, only files.
+2. The Game Data and VRAM tabs will likely not work
+3. Pop_OS! has a custom swappiness that will override any value set here after reboot.
+
+Please keep in mind that support for non-Steam Deck devices is on a "best effort" basis, and will have a low priority.
+Unfortunately, the amount of effort and support that would be needed to guarantee functionality for all distros would
+require me to be working on this full-time, which is not the case.
+
+If you want to use the tweaks here without relying on this tool, please see the "How Does it Work" section below.
+
+### VRAM Tab
+There's a new VRAM tab which will tell you the current "UMA Frame Buffer Size" setting, and how to configure it if
+you haven't already!
+
+### Swap Improvements
+The swapfile path is now completely dynamic and the resize functionality can recover in the event of an earlier failure!
+You no longer need to manually intervene if a previous swap resize failed, just run the resize again and it'll work its
+magic.
+
+### One-Click Game Data Cleanup
+There's now a simple "Delete all uninstalled" button in the "Clean Game Data" window. Just click it and all the data
+from uninstalled games will be removed! 
+
+**Please keep in mind that non-cloud-saved save games should still be backed up manually before using this.**
+
+## Explanation and Tutorial
 
 If you're interested, please see the [announcement video here](https://youtu.be/C9EjXYZUqUs), where I go over all the
 new features and how they work.
 
 ## Functionality
 
-* **NEW** One-click set-to-recommended settings
-* **NEW** One-click revert-to-stock settings
+* One-click set-to-recommended settings
+* One-click revert-to-stock settings
 * Swap Tuner
-    * Swap File Resizer
+    * Swap File Resizer + Recovery
     * Swappiness Changer
-* **NEW** Memory Parameter Tuning
-    * **NEW** HugePages Toggle
-    * **NEW** Compaction Proactiveness Changer
-    * **NEW** HugePage Defragmentation Toggle
-    * **NEW** Page Lock Unfairness Changer
-    * **NEW** Shared Memory (shmem) Toggle
-* **NEW** Storage Manager
-    * **NEW** Sync shadercache and compatdata to the same location the game is installed
-    * **NEW** Delete shadercache and compatdata for whichever games you select
-* **NEW** Full CLI mode
+* Memory Parameter Tuning
+    * HugePages Toggle
+    * Compaction Proactiveness Changer
+    * HugePage Defragmentation Toggle
+    * Page Lock Unfairness Changer
+    * Shared Memory (shmem) Toggle
+* Storage Manager
+    * Sync shadercache and compatdata to the same location the game is installed
+    * Delete shadercache and compatdata for whichever games you select
+      * **NEW** Delete the shadercache and compatdata for all uninstalled games with a single click
+* Full CLI mode
 
 Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/@cryobyte33)
 for examples on how to use this and what performance you can expect.
 
 ## Install
 
+### Simple
+
 [Download this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop)
 to your desktop (right click and save file) on your Steam Deck, then double-click it.
 
 This will install the program, create desktop icons, and create menu entries.
+
+### Manual
+
+See [manual-install.md](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/manual-install.md).
+
+### Offline/Firewalled
+
+In case you're in a firewalled country like China, please see [this post on my website](https://cryobyte.io/posts/2023/03/cryoutilities-offline-installation/)
+for install directions and a non-GitHub download link.
 
 ## Usage
 

@@ -1,7 +1,24 @@
+// CryoUtilities
+// Copyright (C) 2023 CryoByte33 and contributors to the CryoUtilities project
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package internal
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -116,6 +133,15 @@ func doesDirectoryExist(path string, directory string) bool {
 	return false
 }
 
+func doesFileExist(path string) bool {
+	_, err := os.Stat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	} else {
+		return true
+	}
+}
+
 func isSubPath(parent string, sub string) bool {
 	subFolds := filepath.SplitList(sub)
 	for i, fold := range filepath.SplitList(parent) {
@@ -178,7 +204,7 @@ func getListOfDataAllDataLocations() ([]string, error) {
 	for x := range drives {
 		if drives[x] == SteamDataRoot {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
-			possibleLocations = append(possibleLocations, SteamDataRoot)
+			possibleLocations = append(possibleLocations, SteamShaderRoot)
 		} else {
 			compat := filepath.Join(drives[x], ExternalCompatRoot)
 			shader := filepath.Join(drives[x], ExternalShaderRoot)
