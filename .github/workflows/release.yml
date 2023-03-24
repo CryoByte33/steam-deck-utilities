@@ -37,7 +37,7 @@ jobs:
           name: ${{env.release_name}}
           path: cryo_utilities
 
-  release:
+  main-release:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -72,5 +72,34 @@ jobs:
       - name: Create Latest Release
         shell: bash
         run: hub release create latest -m latest -a cryo_utilities -a cu.md5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dev-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: ${{env.release_name}}
+
+      - name: Delete Previous Develop Release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        with:
+          tag_name: develop
+          delete_release: true
+          repo: ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Latest Release
+        shell: bash
+        run: hub release create latest -m develop -a cryo_utilities
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
