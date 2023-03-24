@@ -98,8 +98,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Latest Release
+      - name: Create Develop Release
         shell: bash
-        run: hub release create latest -m develop -a cryo_utilities
+        run: hub release create develop -m develop -a cryo_utilities
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
