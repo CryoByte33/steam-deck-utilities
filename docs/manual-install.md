@@ -37,6 +37,7 @@ Type=Application
 StartupNotify=false' >"$HOME"/Desktop/CryoUtilities.desktop
 chmod +x "$HOME"/Desktop/CryoUtilities.desktop
 rm -rf "$HOME"/Desktop/UpdateCryoUtilities.desktop 2>/dev/null
+mkdir -p "$HOME"/.local/share/applications
 echo '#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=Update CryoUtilities
