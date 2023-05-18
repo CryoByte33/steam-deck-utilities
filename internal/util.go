@@ -335,3 +335,14 @@ func removeGameData(removeList []string, locations []string) {
 		}
 	}
 }
+
+func rebootToBootloader() error {
+	CryoUtils.InfoLog.Println("Rebooting to bootloader")
+
+	_, err := exec.Command("systemctl", "reboot", "--firmware-setup").Output()
+	if err != nil {
+		return fmt.Errorf("error rebooting to bootloader")
+	}
+
+	return nil
+}
