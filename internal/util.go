@@ -242,24 +242,25 @@ func removeElementFromStringSlice(str string, slice []string) []string {
 }
 
 func getUnitStatus(param string) (string, error) {
-	var output string
 	cmd, err := exec.Command("sudo", "cat", UnitMatrix[param]).Output()
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 		return "nil", err
 	}
 	// This is just to get the actual value in units which present as a list.
-	if strings.Contains(string(cmd), "[") {
-		slice := strings.Fields(string(cmd))
-		for x := range slice {
-			if strings.Contains(slice[x], "[") {
-				output = strings.ReplaceAll(slice[x], "[", "")
-				output = strings.ReplaceAll(output, "]", "")
-			}
-		}
-	} else {
-		output = strings.TrimSpace(string(cmd))
+	if !strings.Contains(string(cmd), "[") {
+		return strings.TrimSpace(string(cmd)), nil
 	}
+
+	var output string
+	slice := strings.Fields(string(cmd))
+	for x := range slice {
+		if strings.Contains(slice[x], "[") {
+			output = strings.ReplaceAll(slice[x], "[", "")
+			output = strings.ReplaceAll(output, "]", "")
+		}
+	}
+
 	return output, nil
 }
 
