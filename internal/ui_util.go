@@ -18,12 +18,13 @@ package internal
 
 import (
 	"fmt"
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/widget"
 	"path/filepath"
 	"sort"
 	"strconv"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 )
 
 type GameStatus struct {
@@ -48,12 +49,12 @@ func createGameDataList() (*widget.CheckGroup, error) {
 		return nil, err
 	}
 
-	var sortedMap []int
-
+	sortedMap := make([]int, 0, len(localGames))
 	for i := range localGames {
 		// Add each key to the sortedMap slice, so we can sort it afterwards.
 		sortedMap = append(sortedMap, i)
 	}
+
 	// Sort the slice
 	sort.Ints(sortedMap)
 
@@ -64,14 +65,14 @@ func createGameDataList() (*widget.CheckGroup, error) {
 			continue
 		}
 
-		var optionStr string
-		var gameStr string
+		var (
+			optionStr string
+			gameStr   = "???"
+		)
 
 		// If the game name is known, use that, otherwise ???.
 		if localGames[sortedMap[key]].GameName != "" {
 			gameStr = localGames[sortedMap[key]].GameName
-		} else {
-			gameStr = "???"
 		}
 
 		if localGames[sortedMap[key]].IsInstalled {
@@ -79,6 +80,7 @@ func createGameDataList() (*widget.CheckGroup, error) {
 		} else {
 			optionStr = fmt.Sprintf("%d - %s - Not Installed", sortedMap[key], gameStr)
 		}
+
 		cleanupList.Append(optionStr)
 	}
 
@@ -130,8 +132,7 @@ func getLocalGameList() (map[int]GameStatus, error) {
 	}
 
 	// Store all games present on the filesystem, in all compat and shader directories
-	localGames := make(map[int]GameStatus)
-
+	localGames := make(map[int]GameStatus, len(storage))
 	for i := range storage {
 		intGame, _ := strconv.Atoi(storage[i])
 		localGames[intGame] = GameStatus{
