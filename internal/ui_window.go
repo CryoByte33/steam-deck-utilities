@@ -195,20 +195,22 @@ func populateGameDataWindow(w fyne.Window, left string, right string) {
 			err = moveGameData(data, left, right)
 			if err != nil {
 				presentErrorInUI(err, w)
-			} else {
-				_, err := data.confirmDirectoryStatus(left, right)
-				if err != nil {
-					presentErrorInUI(err, w)
-				} else {
-					CryoUtils.InfoLog.Println("All data moved properly, printing success!")
-					dialog.ShowInformation(
-						"Success!",
-						"Data move completed, all game data is synced to the appropriate device.",
-						CryoUtils.MainWindow,
-					)
-					w.Close()
-				}
+				return
 			}
+
+			_, err := data.confirmDirectoryStatus(left, right)
+			if err != nil {
+				presentErrorInUI(err, w)
+				return
+			}
+
+			CryoUtils.InfoLog.Println("All data moved properly, printing success!")
+			dialog.ShowInformation(
+				"Success!",
+				"Data move completed, all game data is synced to the appropriate device.",
+				CryoUtils.MainWindow,
+			)
+			w.Close()
 		})
 	} else {
 		// Otherwise, provide a button to close the window
@@ -234,8 +236,10 @@ func populateGameDataWindow(w fyne.Window, left string, right string) {
 }
 
 func cleanupDataWindow() {
-	var cleanupCard *widget.Card
-	var cleanupButton, cancelButton *widget.Button
+	var (
+		cleanupCard                 *widget.Card
+		cleanupButton, cancelButton *widget.Button
+	)
 
 	// Create a new window
 	w := CryoUtils.App.NewWindow("Clean Game Data")
@@ -245,15 +249,18 @@ func cleanupDataWindow() {
 	if err != nil {
 		presentErrorInUI(err, CryoUtils.MainWindow)
 	}
+
 	cleanupList.OnChanged = func(s []string) {
-		var tempList []string
+		tempList := make([]string, 0, len(s))
 
 		for i := range s {
 			// Get only the game ID for the selected games
 			tempList = append(tempList, strings.Split(s[i], " ")[0])
 		}
+
 		removeList = tempList
 	}
+
 	cleanupScroll := container.NewVScroll(cleanupList)
 
 	// Create an error in each card if directories can't be listed
@@ -268,24 +275,24 @@ func cleanupDataWindow() {
 			"Please be sure to back up any Non-Steam-Cloud save games before\n"+
 			"deleting them using this tool, as any selected will be lost.",
 			func(b bool) {
-				if b {
-					possibleLocations, err := getListOfDataAllDataLocations()
-					if err != nil {
-						CryoUtils.ErrorLog.Println(err)
-						presentErrorInUI(err, CryoUtils.MainWindow)
-					}
+				defer w.Close()
 
-					removeGameData(removeList, possibleLocations)
-
-					dialog.ShowInformation(
-						"Success!",
-						"Process completed!",
-						CryoUtils.MainWindow,
-					)
-					w.Close()
-				} else {
-					w.Close()
+				if !b {
+					return
 				}
+
+				possibleLocations, err := getListOfDataAllDataLocations()
+				if err != nil {
+					CryoUtils.ErrorLog.Println(err)
+					presentErrorInUI(err, CryoUtils.MainWindow)
+				}
+
+				removeGameData(removeList, possibleLocations)
+				dialog.ShowInformation(
+					"Success!",
+					"Process completed!",
+					CryoUtils.MainWindow,
+				)
 			}, w)
 	})
 
@@ -361,22 +368,23 @@ func swapSizeWindow() {
 			"(This can take up to 30 minutes)", "Quit", progress,
 			w,
 		)
+
 		d.Show()
-		err = changeSwapSizeGUI(chosenSize)
-		if err != nil {
+		if err := changeSwapSizeGUI(chosenSize); err != nil {
 			d.Hide()
 			presentErrorInUI(err, w)
-		} else {
-			d.Hide()
-			dialog.ShowInformation(
-				"Success!",
-				"Process completed! You can verify the file is resized by\n"+
-					"running 'ls -lash /home/swapfile' or 'swapon -s' in Konsole.",
-				CryoUtils.MainWindow,
-			)
-			CryoUtils.refreshSwapContent()
-			w.Close()
+			return
 		}
+
+		d.Hide()
+		dialog.ShowInformation(
+			"Success!",
+			"Process completed! You can verify the file is resized by\n"+
+				"running 'ls -lash /home/swapfile' or 'swapon -s' in Konsole.",
+			CryoUtils.MainWindow,
+		)
+		CryoUtils.refreshSwapContent()
+		w.Close()
 	})
 
 	// Make a progress bar and hide it
@@ -443,15 +451,16 @@ func swappinessWindow() {
 		err := ChangeSwappiness(chosenSwappiness)
 		if err != nil {
 			presentErrorInUI(err, w)
-		} else {
-			dialog.ShowInformation(
-				"Success!",
-				"Swappiness change completed!",
-				CryoUtils.MainWindow,
-			)
-			CryoUtils.refreshSwappinessContent()
-			w.Close()
+			return
 		}
+
+		dialog.ShowInformation(
+			"Success!",
+			"Swappiness change completed!",
+			CryoUtils.MainWindow,
+		)
+		CryoUtils.refreshSwappinessContent()
+		w.Close()
 	})
 
 	// Format the window
