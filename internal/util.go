@@ -298,15 +298,39 @@ func setUnitValue(param string, value string) error {
 	echoCmd.Stdout = writer
 	teeCmd.Stdin = reader
 	teeCmd.Stdout = &buf
-	echoCmd.Start()
-	teeCmd.Start()
-	echoCmd.Wait()
-	writer.Close()
-	teeCmd.Wait()
-	reader.Close()
-	io.Copy(os.Stdout, &buf)
 
-	return nil
+	if err := echoCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start command %q: %w",
+			strings.Join(echoCmd.Args, " "),
+			err)
+	}
+	if err := teeCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start command %q: %w",
+			strings.Join(teeCmd.Args, " "),
+			err,
+		)
+	}
+	if err := echoCmd.Wait(); err != nil {
+		return fmt.Errorf("command %q returned an error: %w",
+			strings.Join(echoCmd.Args, " "),
+			err,
+		)
+	}
+	if err := writer.Close(); err != nil {
+		return fmt.Errorf("failed to close writer: %w", err)
+	}
+	if err := teeCmd.Wait(); err != nil {
+		return fmt.Errorf("command %q returned an error: %w",
+			strings.Join(teeCmd.Args, " "),
+			err,
+		)
+	}
+	if err := reader.Close(); err != nil {
+		return fmt.Errorf(": %w", err)
+	}
+
+	_, err := io.Copy(os.Stdout, &buf)
+	return err
 }
 
 func getHumanVRAMSize(size int) string {
@@ -321,7 +345,6 @@ func getHumanVRAMSize(size int) string {
 }
 
 func removeGameData(removeList []string, locations []string) {
-
 	CryoUtils.InfoLog.Println("Removing the following content:")
 	for i := range removeList {
 		for j := range locations {
