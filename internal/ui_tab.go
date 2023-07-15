@@ -17,13 +17,14 @@
 package internal
 
 import (
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"strconv"
-	"strings"
 )
 
 // Home tab for "recommended" and "default" buttons
@@ -287,12 +288,11 @@ func (app *Config) vramTab() *fyne.Container {
 	app.refreshVRAMContent()
 
 	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
-			"2. Press and hold the volume up button, press the power button, then release both\n\n" +
-			"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
-	
+		"2. Press and hold the volume up button, press the power button, then release both\n\n" +
+		"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+
 	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
-
 
 	textVBox := container.NewVBox(
 		textHowTo,
