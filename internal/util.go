@@ -200,17 +200,18 @@ func getListOfDataAllDataLocations() ([]string, error) {
 		return nil, err
 	}
 
-	var possibleLocations []string
+	possibleLocations := make([]string, len(drives)*2)
 	for x := range drives {
 		if drives[x] == SteamDataRoot {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
 			possibleLocations = append(possibleLocations, SteamShaderRoot)
-		} else {
-			compat := filepath.Join(drives[x], ExternalCompatRoot)
-			shader := filepath.Join(drives[x], ExternalShaderRoot)
-			possibleLocations = append(possibleLocations, compat)
-			possibleLocations = append(possibleLocations, shader)
+			continue
 		}
+
+		compat := filepath.Join(drives[x], ExternalCompatRoot)
+		shader := filepath.Join(drives[x], ExternalShaderRoot)
+		possibleLocations = append(possibleLocations, compat)
+		possibleLocations = append(possibleLocations, shader)
 	}
 
 	return possibleLocations, nil
