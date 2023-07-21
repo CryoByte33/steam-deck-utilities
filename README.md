@@ -70,6 +70,13 @@ to your desktop (right click and save file) on your Steam Deck, then double-clic
 
 This will install the program, create desktop icons, and create menu entries.
 
+### Command-line
+
+There is also a fast install for those who can use Konsole. Run
+```
+curl https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/install.sh | bash -s --
+```
+
 ### Manual
 
 See [manual-install.md](https://github.com/CryoByte33/steam-deck-utilities/blob/main/docs/manual-install.md).
