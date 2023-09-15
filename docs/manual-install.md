@@ -2,14 +2,14 @@
 
 1. Open Konsole and use the following commands, pressing the Enter/Return key after each:
 ```bash
-cd
+cd ~
 mkdir .cryo_utilities
 cd .cryo_utilities
 ```
 2. Go to [the releases page](https://github.com/CryoByte33/steam-deck-utilities/releases/tag/latest) and download cryo_utilities.
 3. Go to [launcher.sh](https://github.com/CryoByte33/steam-deck-utilities/blob/main/launcher.sh), right click on "Raw" and "Save Link As" to the downloads folder.
 4. Go to [icon.png](https://github.com/CryoByte33/steam-deck-utilities/blob/main/icon.png), right click on "Raw" and "Save Link As" to the downloads folder.
-5. Move all 3 downloaded files to `/home/deck/cryo_utilities`.
+5. Move all 3 downloaded files to `/home/deck/.cryo_utilities`.
 6. Open Konsole and paste the entire block below, then press Enter/Return:
 ```bash
 cd ~/.cryo_utilities
