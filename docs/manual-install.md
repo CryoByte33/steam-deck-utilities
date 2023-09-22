@@ -2,7 +2,7 @@
 
 1. Open Konsole and use the following commands, pressing the Enter/Return key after each:
 ```bash
-cd ~
+cd
 mkdir .cryo_utilities
 cd .cryo_utilities
 ```
