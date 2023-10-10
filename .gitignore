@@ -75,5 +75,9 @@ fyne-cross/*
 .idea
 .idea/*
 cryoutilities.log
+cryo_utilities
+build-dir
+repo
+.flatpak-builder
 /Dockerfile
 /build

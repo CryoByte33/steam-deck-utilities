@@ -1,0 +1,62 @@
+app-id: io.cryobyte.cryobyteutilities
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
+command:  launcher.sh
+finish-args:
+  - '--share=ipc'
+  - '--socket=x11'
+  - '--filesystem=host'
+  - '--device=dri'
+  - '--share=network'
+  - '--talk-name=org.freedesktop.Flatpak'
+build-options:
+  env:
+    - GOBIN=/app/bin
+    - GOROOT=/app/lib/sdk/golang/
+modules:
+  - name: golang
+    buildsystem: simple
+    sources:
+      - type: archive
+        only-arches:
+          - aarch64
+        url: https://go.dev/dl/go1.20.1.linux-arm64.tar.gz
+        sha256: 5e5e2926733595e6f3c5b5ad1089afac11c1490351855e87849d0e7702b1ec2e
+      - type: archive
+        only-arches:
+          - x86_64
+        url: https://go.dev/dl/go1.20.1.linux-amd64.tar.gz
+        sha256: 000a5b1fca4f75895f78befeb2eecf10bfff3c428597f3f1e69133b63b911b02
+    build-commands:
+      - install -d /app/lib/sdk/golang
+      - cp -rpv * /app/lib/sdk/golang/
+  - name: host-spawn
+    buildsystem: simple
+    sources:
+      - type: file
+        only-arches:
+          - aarch64
+        url: https://github.com/1player/host-spawn/releases/download/1.4.1/host-spawn-aarch64
+        sha256: 29bff846d72e37093b3fdf7859bae16addd64acc98087f8c059548df3c2273c4
+      - type: file
+        only-arches:
+          - x86_64
+        url: https://github.com/1player/host-spawn/releases/download/1.4.1/host-spawn-x86_64
+        sha256: d81bb6125ec73a9a2e26266c48787367fbcb665d67c2e7fb42217f0981106cf7
+    build-commands:
+      - install -D host-spawn* /app/bin/host-spawn
+  - name: cryo_utilities
+    buildsystem: simple    
+    build-commands:
+      - $GOROOT/bin/go build -ldflags="-s -w" -o cryo_utilities ./cmd/cryoutilities
+      - install -D cryo_utilities /app/bin/cryo_utilities
+      - install -D launcher.sh /app/bin/launcher.sh
+      - mkdir -p /app/share/applications/
+      - install -D ./cmd/cryoutilities/Icon.png /app/share/icons/hicolor/512x512/apps/io.cryobyte.cryobyteutilities.png
+      - install -D ./io.cryobyte.cryobyteutilities.desktop /app/share/applications/io.cryobyte.cryobyteutilities.desktop
+      - install -Dm644 ./io.cryobyte.cryobyteutilities.appdata.xml /app/share/appdata/io.cryobyte.cryobyteutilities.metainfo.xml
+    sources:
+      - type: git
+        path: .
+        branch: flatpak-proto-2

@@ -20,7 +20,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -61,7 +60,7 @@ func getSwapFileLocation() (string, error) {
 
 // Get the current swap and swappiness values
 func getSwappinessValue() (int, error) {
-	cmd, err := exec.Command("sysctl", "vm.swappiness").Output()
+	cmd, err := createCommand("sysctl", "vm.swappiness").Output()
 	if err != nil {
 		return 100, fmt.Errorf("error getting current swappiness")
 	}
@@ -122,7 +121,7 @@ func getAvailableSwapSizes() ([]string, error) {
 // Disable swapping completely
 func disableSwap() error {
 	CryoUtils.InfoLog.Println("Disabling swap temporarily...")
-	_, err := exec.Command("sudo", "swapoff", "-a").Output()
+	_, err := createCommand("sudo", "swapoff", "-a").Output()
 	if err != nil {
 		return fmt.Errorf("error disabling swap")
 	}
@@ -136,7 +135,7 @@ func resizeSwapFile(size int) error {
 
 	CryoUtils.InfoLog.Println("Resizing swap to", size, "GB...")
 	// Use dd to write zeroes, reevaluate using Go directly in the future
-	_, err := exec.Command("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress").Output()
+	_, err := createCommand("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress").Output()
 	if err != nil {
 		return fmt.Errorf("error resizing %s", CryoUtils.SwapFileLocation)
 	}
@@ -146,7 +145,7 @@ func resizeSwapFile(size int) error {
 // Set swap permissions to a valid value.
 func setSwapPermissions() error {
 	CryoUtils.InfoLog.Println("Setting permissions on", CryoUtils.SwapFileLocation, "to 0600...")
-	_, err := exec.Command("sudo", "chmod", "600", CryoUtils.SwapFileLocation).Output()
+	_, err := createCommand("sudo", "chmod", "600", CryoUtils.SwapFileLocation).Output()
 	if err != nil {
 		return fmt.Errorf("error setting permissions on %s", CryoUtils.SwapFileLocation)
 	}
@@ -156,11 +155,11 @@ func setSwapPermissions() error {
 // Enable swapping on the newly resized file.
 func initNewSwapFile() error {
 	CryoUtils.InfoLog.Println("Enabling swap on", CryoUtils.SwapFileLocation, "...")
-	_, err := exec.Command("sudo", "mkswap", CryoUtils.SwapFileLocation).Output()
+	_, err := createCommand("sudo", "mkswap", CryoUtils.SwapFileLocation).Output()
 	if err != nil {
 		return fmt.Errorf("error creating swap on %s", CryoUtils.SwapFileLocation)
 	}
-	_, err = exec.Command("sudo", "swapon", CryoUtils.SwapFileLocation).Output()
+	_, err = createCommand("sudo", "swapon", CryoUtils.SwapFileLocation).Output()
 	if err != nil {
 		return fmt.Errorf("error enabling swap on %s", CryoUtils.SwapFileLocation)
 	}

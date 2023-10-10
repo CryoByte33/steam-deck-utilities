@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,7 +9,7 @@ import (
 
 // Get the current VRAM
 func getVRAMValue() (int, error) {
-	cmd, err := exec.Command("glxinfo", "-B").Output()
+	cmd, err := createCommand("glxinfo", "-B").Output()
 
 	// Extract video memory
 	re := regexp.MustCompile(`Video memory: [0-9]+`)

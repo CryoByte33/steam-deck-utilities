@@ -22,6 +22,8 @@ import (
 	"path/filepath"
 )
 
+var HomeDir = getUserHomeDir()
+
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
 var CurrentVersionNumber = "2.2.0"
 
