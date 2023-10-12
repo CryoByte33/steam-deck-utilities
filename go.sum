@@ -37,8 +37,6 @@ cloud.google.com/go/storage v1.6.0/go.mod h1:N7U0C8pVQ/+NIKOBQyamJIeKQKkZ+mxpohl
 cloud.google.com/go/storage v1.8.0/go.mod h1:Wv1Oy7z6Yz3DshWRJFhqM/UCfaWIRTdp0RXyy7KQOVs=
 cloud.google.com/go/storage v1.10.0/go.mod h1:FLPqc6j+Ki4BU591ie1oL6qBQGu2Bl/tZ9ullr3+Kg0=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
-fyne.io/fyne/v2 v2.3.1-rc2 h1:jTDwPaUrbVKS5dWYMp2aZ32xG8WvmjLuN0vIgdp5YYU=
-fyne.io/fyne/v2 v2.3.1-rc2/go.mod h1:dl/M+f0r5lJRhy+gdPbmYy97tbu3SWF/RF6/9KXMs+s=
 fyne.io/fyne/v2 v2.3.1 h1:2/dHeRXEpn/D4MyTHdK43g3/pxeLOi3FcdNJI+iphlM=
 fyne.io/fyne/v2 v2.3.1/go.mod h1:dl/M+f0r5lJRhy+gdPbmYy97tbu3SWF/RF6/9KXMs+s=
 fyne.io/systray v1.10.1-0.20230207085535-4a244dbb9d03 h1:zb84y6X6lIi4Aeo8ehu6Qtu2fipBZ6Wzp41Ki/F4qdg=
