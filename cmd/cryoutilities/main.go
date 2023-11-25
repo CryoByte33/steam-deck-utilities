@@ -18,25 +18,28 @@ package main
 
 import (
 	"context"
-	"cryoutilities/internal"
 	"errors"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/spf13/afero"
+
+	"cryoutilities/internal"
+
 	"github.com/cristalhq/acmd"
 )
 
 func main() {
 	// Delete old log file
-	os.Remove(internal.LogFilePath)
+	func() { _ = os.Remove(internal.LogFilePath) }()
 	// Create a log file
 	logFile, err := os.OpenFile(internal.LogFilePath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer logFile.Close()
+	defer func() { _ = logFile.Close() }()
 	log.SetOutput(logFile)
 
 	// Create loggers
@@ -46,13 +49,28 @@ func main() {
 	// Print the current version as a test
 	internal.CryoUtils.InfoLog.Println("Current Version:", internal.CurrentVersionNumber)
 
+	// it is used to be replaced in unit-tests
+	appFs := afero.NewOsFs()
+
+	swap, err := internal.NewSwap(
+		internal.DefaultSwapSizeBytes,
+		internal.AvailableSwapSizes,
+		internal.OldSwappinessUnitFile,
+		internal.DefaultSwapFileLocation,
+		appFs,
+		internal.CryoUtils.InfoLog,
+	)
+	if err != nil {
+		log.Panicf("creating a swap struct: %v", err)
+	}
+
 	// Provide a command structure for parsing
 	cmds := []acmd.Command{
 		{
 			Name:        "gui",
 			Description: "Run in GUI mode",
 			ExecFunc: func(context.Context, []string) error {
-				internal.InitUI()
+				internal.InitUI(swap)
 				return nil
 			},
 		},
@@ -65,7 +83,7 @@ func main() {
 				if err != nil {
 					return err
 				}
-				err = internal.ChangeSwapSizeCLI(size, false)
+				err = internal.ChangeSwapSizeCLI(swap, size, false)
 				if err != nil {
 					return err
 				}
@@ -83,7 +101,7 @@ func main() {
 				if err != nil || swappinessInt < 0 || swappinessInt > 200 {
 					return errors.New("invalid swappiness value")
 				}
-				err = internal.ChangeSwappiness(swappiness)
+				err = swap.ChangeSwappiness(swappiness)
 				if err != nil {
 					return err
 				}
@@ -210,7 +228,7 @@ func main() {
 			Name:        "recommended",
 			Description: "Set all values to Cryo's recommendations.",
 			ExecFunc: func(context.Context, []string) error {
-				err := internal.UseRecommendedSettings()
+				err := internal.UseRecommendedSettings(swap)
 				if err != nil {
 					return err
 				}
@@ -221,7 +239,7 @@ func main() {
 			Name:        "stock",
 			Description: "Set all values to Valve defaults.",
 			ExecFunc: func(context.Context, []string) error {
-				err := internal.UseStockSettings()
+				err := internal.UseStockSettings(swap)
 				if err != nil {
 					return err
 				}

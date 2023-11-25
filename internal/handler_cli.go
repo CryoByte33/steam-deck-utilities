@@ -22,19 +22,19 @@ import (
 )
 
 // ChangeSwapSizeCLI Change the swap file size to the specified size in GB
-func ChangeSwapSizeCLI(size int, isUI bool) error {
+func ChangeSwapSizeCLI(swap *Swap, size int, isUI bool) error {
 	// Refresh creds if running with UI
 	if isUI {
 		renewSudoAuth()
 	}
 	// Disable swap temporarily
-	err := disableSwap()
+	err := swap.disableSwap()
 	if err != nil {
 		return err
 	}
 
 	// Resize the file
-	err = resizeSwapFile(size)
+	err = swap.resizeSwapFile(size)
 	if err != nil {
 		return err
 	}
@@ -45,20 +45,20 @@ func ChangeSwapSizeCLI(size int, isUI bool) error {
 		renewSudoAuth()
 	}
 	// Set permissions on file
-	err = setSwapPermissions()
+	err = swap.setSwapPermissions()
 	if err != nil {
 		return err
 	}
 
 	// Initialize new swap file
-	err = initNewSwapFile()
+	err = swap.initNewSwapFile()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func UseRecommendedSettings() error {
+func UseRecommendedSettings(swap *Swap) error {
 	// Change swap
 	CryoUtils.InfoLog.Println("Starting swap file resize...")
 	availableSpace, err := getFreeSpace("/home")
@@ -68,7 +68,7 @@ func UseRecommendedSettings() error {
 	if availableSpace < RecommendedSwapSizeBytes {
 		size := 1
 		var availableSizes []string
-		availableSizes, err = getAvailableSwapSizes()
+		availableSizes, err = swap.getAvailableSwapSizes()
 		if err != nil {
 			return err
 		}
@@ -83,18 +83,18 @@ func UseRecommendedSettings() error {
 				size = 16
 			}
 		}
-		err = ChangeSwapSizeCLI(size, true)
+		err = ChangeSwapSizeCLI(swap, size, true)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = ChangeSwapSizeCLI(RecommendedSwapSize, true)
+		err = ChangeSwapSizeCLI(swap, RecommendedSwapSize, true)
 		if err != nil {
 			return err
 		}
 	}
 	CryoUtils.InfoLog.Println("Swap file resized, changing swappiness...")
-	err = ChangeSwappiness(RecommendedSwappiness)
+	err = swap.ChangeSwappiness(RecommendedSwappiness)
 	if err != nil {
 		return err
 	}
@@ -133,17 +133,17 @@ func UseRecommendedSettings() error {
 	return nil
 }
 
-func UseStockSettings() error {
+func UseStockSettings(swap *Swap) error {
 	CryoUtils.InfoLog.Println("Resizing swap file to 1GB...")
 	// Revert swap file size
-	err := ChangeSwapSizeCLI(DefaultSwapSize, true)
+	err := ChangeSwapSizeCLI(swap, DefaultSwapSize, true)
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Setting swappiness to 100...")
 	// Revert swappiness
-	err = ChangeSwappiness(DefaultSwappiness)
+	err = swap.ChangeSwappiness(DefaultSwappiness)
 	if err != nil {
 		return err
 	}

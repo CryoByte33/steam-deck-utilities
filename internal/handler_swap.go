@@ -18,23 +18,101 @@ package internal
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"os"
+	"log"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/spf13/afero"
 )
+
+// logger is an interface to substitute *log.Logger for unit-tests.
+type logger interface {
+	Println(v ...any)
+}
+
+var _ logger = &log.Logger{}
+
+// execCommander is an interface to substitute exec.Command() for unit-tests.
+type execCommander interface {
+	ExecAndOutput(name string, arg ...string) ([]byte, error)
+}
+
+var _ execCommander = realExecCommander{}
+
+type realExecCommander struct{}
+
+func (c realExecCommander) ExecAndOutput(name string, arg ...string) ([]byte, error) {
+	return exec.Command(name, arg...).Output()
+}
+
+// NewSwap is a constructor for Swap.
+func NewSwap(
+	defaultSwapSizeBytes int64,
+	availableSwapSizes []string,
+	oldSwappinessUnitFile string,
+	defaultSwapFileLocation string,
+	fs afero.Fs,
+	loggerInfo logger,
+) (*Swap, error) {
+	if defaultSwapSizeBytes == 0 {
+		return nil, errors.New("defaultSwapSizeBytes is required")
+	}
+	if len(availableSwapSizes) == 0 {
+		return nil, errors.New("availableSwapSizes is required")
+	}
+	if oldSwappinessUnitFile == "" {
+		return nil, errors.New("oldSwappinessUnitFile is required")
+	}
+	if loggerInfo == nil {
+		return nil, errors.New("info logger is required")
+	}
+	if defaultSwapFileLocation == "" {
+		return nil, errors.New("default swap location is required")
+	}
+	if fs == nil {
+		return nil, errors.New("fs is required")
+	}
+	swapFileLocation, err := getSwapFileLocation(fs, defaultSwapFileLocation)
+	if err != nil {
+		return nil, fmt.Errorf("getting swapfile location: %w", err)
+	}
+
+	return &Swap{
+		defaultSwapSizeBytes:  defaultSwapSizeBytes,
+		availableSwapSizes:    availableSwapSizes,
+		oldSwappinessUnitFile: oldSwappinessUnitFile,
+		swapFileLocation:      swapFileLocation,
+		fs:                    fs,
+		execCommander:         realExecCommander{},
+		loggerInfo:            loggerInfo,
+	}, nil
+}
+
+// Swap decorates all functionality related to swap/swappiness changes.
+type Swap struct {
+	defaultSwapSizeBytes  int64
+	availableSwapSizes    []string
+	oldSwappinessUnitFile string
+	swapFileLocation      string
+	fs                    afero.Fs
+	execCommander         execCommander
+	loggerInfo            logger
+}
 
 // Get swap file location from the system (/proc/swaps)
 // Sample output:
 // Filename				Type		Size	Used	Priority
 // /home/swapfile			file		8388604	0	-2
-func getSwapFileLocation() (string, error) {
-	file, err := os.Open("/proc/swaps")
+func getSwapFileLocation(fs afero.Fs, defaultSwapFileLocation string) (string, error) {
+	filepath := "/proc/swaps"
+	file, err := fs.Open(filepath)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
 	// skip the first line (header)
@@ -46,63 +124,64 @@ func getSwapFileLocation() (string, error) {
 			location := fields[0]
 			// If swapfile is a partition then return no swapfile found
 			if strings.HasPrefix(location, "/dev/") {
-				return "", fmt.Errorf("no swapfile found")
+				return "", fmt.Errorf("no swapfile found in %s", filepath)
 			}
 			return location, nil
 		}
 	}
 
-	if doesFileExist(DefaultSwapFileLocation) {
-		return DefaultSwapFileLocation, nil
+	if doesFileExist(defaultSwapFileLocation) {
+		return defaultSwapFileLocation, nil
 	}
 
-	return "", fmt.Errorf("no swapfile found")
+	return "", fmt.Errorf("no swapfile found in %s", filepath)
 }
 
 // Get the current swap and swappiness values
-func getSwappinessValue() (int, error) {
-	cmd, err := exec.Command("sysctl", "vm.swappiness").Output()
+func (s *Swap) getSwappinessValue() (int, error) {
+	cmd, err := s.execCommander.ExecAndOutput("sysctl", "vm.swappiness")
 	if err != nil {
-		return 100, fmt.Errorf("error getting current swappiness")
+		return 100, fmt.Errorf("error getting current swappiness: %w", err)
 	}
+
 	output := strings.Fields(string(cmd))
-	CryoUtils.InfoLog.Println("Found a swappiness of", output[2])
-	swappiness, _ := strconv.Atoi(output[2])
+	if len(output) < 3 {
+		return 100, fmt.Errorf("unexpected swappiness returned: %q", cmd)
+	}
+
+	swappiness, err := strconv.Atoi(output[2])
+	if err != nil {
+		return 100, fmt.Errorf("converting swappiness of %q: %w", cmd, err)
+	}
+	s.loggerInfo.Println("Found a swappiness of", output[2])
 
 	return swappiness, nil
 }
 
 // Get current swap file size, in bytes.
-func getSwapFileSize() (int64, error) {
-	location, err := getSwapFileLocation()
-	if err != nil {
-		return DefaultSwapSizeBytes, fmt.Errorf("error getting swapfile location: %v", err)
-	}
-
-	CryoUtils.SwapFileLocation = location
-
-	info, err := os.Stat(CryoUtils.SwapFileLocation)
+func (s *Swap) getSwapFileSize() (int64, error) {
+	info, err := s.fs.Stat(s.swapFileLocation)
 	if err != nil {
 		// Don't crash the program, just report the default size
-		return DefaultSwapSizeBytes, fmt.Errorf("error getting current swap file size")
+		return s.defaultSwapSizeBytes, fmt.Errorf("error getting current swap file size: %w", err)
 	}
-	CryoUtils.InfoLog.Println("Found a swap file with a size of", info.Size())
+	s.loggerInfo.Println("Found a swap file with a size of", info.Size())
 	return info.Size(), nil
 }
 
 // Get the available space for a swap file and return a slice of strings
-func getAvailableSwapSizes() ([]string, error) {
+func (s *Swap) getAvailableSwapSizes() ([]string, error) {
 	// Get the free space in /home
-	currentSwapSize, _ := getSwapFileSize()
+	currentSwapSize, _ := s.getSwapFileSize()
 	availableSpace, err := getFreeSpace("/home")
 	if err != nil {
-		return nil, fmt.Errorf("error getting available space in /home")
+		return nil, fmt.Errorf("error getting available space in /home: %w", err)
 	}
 
 	// Loop through the range of available sizes and create a list of viable options for the current Deck.
 	// This will always leave 1 as an available option, just in case.
 	validSizes := []string{"1 - Default"}
-	for _, size := range AvailableSwapSizes {
+	for _, size := range s.availableSwapSizes {
 		intSize, _ := strconv.Atoi(size)
 		byteSize := intSize * GigabyteMultiplier
 		if int64(byteSize+SpaceOverhead) < (availableSpace + currentSwapSize) {
@@ -115,70 +194,70 @@ func getAvailableSwapSizes() ([]string, error) {
 		}
 	}
 
-	CryoUtils.InfoLog.Println("Available Swap Sizes:", validSizes)
+	s.loggerInfo.Println("Available Swap Sizes:", validSizes)
 	return validSizes, nil
 }
 
 // Disable swapping completely
-func disableSwap() error {
-	CryoUtils.InfoLog.Println("Disabling swap temporarily...")
-	_, err := exec.Command("sudo", "swapoff", "-a").Output()
+func (s *Swap) disableSwap() error {
+	s.loggerInfo.Println("Disabling swap temporarily...")
+	_, err := s.execCommander.ExecAndOutput("sudo", "swapoff", "-a")
 	if err != nil {
-		return fmt.Errorf("error disabling swap")
+		return fmt.Errorf("error disabling swap: %w", err)
 	}
 	return err
 }
 
 // Resize the swap file to the provided size, in GB.
-func resizeSwapFile(size int) error {
-	locationArg := fmt.Sprintf("of=%s", CryoUtils.SwapFileLocation)
+func (s *Swap) resizeSwapFile(size int) error {
+	locationArg := fmt.Sprintf("of=%s", s.swapFileLocation)
 	countArg := fmt.Sprintf("count=%d", size)
 
-	CryoUtils.InfoLog.Println("Resizing swap to", size, "GB...")
+	s.loggerInfo.Println("Resizing swap to", size, "GB...")
 	// Use dd to write zeroes, reevaluate using Go directly in the future
-	_, err := exec.Command("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress").Output()
+	_, err := s.execCommander.ExecAndOutput("sudo", "dd", "if=/dev/zero", locationArg, "bs=1G", countArg, "status=progress")
 	if err != nil {
-		return fmt.Errorf("error resizing %s", CryoUtils.SwapFileLocation)
+		return fmt.Errorf("error resizing %s: %w", s.swapFileLocation, err)
 	}
 	return nil
 }
 
 // Set swap permissions to a valid value.
-func setSwapPermissions() error {
-	CryoUtils.InfoLog.Println("Setting permissions on", CryoUtils.SwapFileLocation, "to 0600...")
-	_, err := exec.Command("sudo", "chmod", "600", CryoUtils.SwapFileLocation).Output()
+func (s *Swap) setSwapPermissions() error {
+	s.loggerInfo.Println("Setting permissions on", s.swapFileLocation, "to 0600...")
+	_, err := s.execCommander.ExecAndOutput("sudo", "chmod", "600", s.swapFileLocation)
 	if err != nil {
-		return fmt.Errorf("error setting permissions on %s", CryoUtils.SwapFileLocation)
+		return fmt.Errorf("error setting permissions on %s: %w", s.swapFileLocation, err)
 	}
 	return nil
 }
 
 // Enable swapping on the newly resized file.
-func initNewSwapFile() error {
-	CryoUtils.InfoLog.Println("Enabling swap on", CryoUtils.SwapFileLocation, "...")
-	_, err := exec.Command("sudo", "mkswap", CryoUtils.SwapFileLocation).Output()
+func (s *Swap) initNewSwapFile() error {
+	s.loggerInfo.Println("Enabling swap on", s.swapFileLocation, "...")
+	_, err := s.execCommander.ExecAndOutput("sudo", "mkswap", s.swapFileLocation)
 	if err != nil {
-		return fmt.Errorf("error creating swap on %s", CryoUtils.SwapFileLocation)
+		return fmt.Errorf("error creating swap on %s: %w", s.swapFileLocation, err)
 	}
-	_, err = exec.Command("sudo", "swapon", CryoUtils.SwapFileLocation).Output()
+	_, err = s.execCommander.ExecAndOutput("sudo", "swapon", s.swapFileLocation)
 	if err != nil {
-		return fmt.Errorf("error enabling swap on %s", CryoUtils.SwapFileLocation)
+		return fmt.Errorf("error enabling swap on %s: %w", s.swapFileLocation, err)
 	}
 	return nil
 }
 
 // ChangeSwappiness Set swappiness to the provided integer.
-func ChangeSwappiness(value string) error {
-	CryoUtils.InfoLog.Println("Setting swappiness...")
+func (s *Swap) ChangeSwappiness(value string) error {
+	s.loggerInfo.Println("Setting swappiness...")
 	// Remove old swappiness file while we're at it
-	_ = removeFile(OldSwappinessUnitFile)
+	_ = removeFile(s.oldSwappinessUnitFile)
 	err := setUnitValue("swappiness", value)
 	if err != nil {
 		return err
 	}
 
 	if value == DefaultSwappiness {
-		CryoUtils.InfoLog.Println("Removing swappiness unit to revert to default behavior...")
+		s.loggerInfo.Println("Removing swappiness unit to revert to default behavior...")
 		err = removeUnitFile("swappiness")
 		if err != nil {
 			return err

@@ -17,17 +17,18 @@
 package internal
 
 import (
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"strconv"
-	"strings"
 )
 
 // Home tab for "recommended" and "default" buttons
-func (app *Config) homeTab() *fyne.Container {
+func (app *Config) homeTab(swap *Swap) *fyne.Container {
 	welcomeText := canvas.NewText("Welcome to CryoUtilities!", White)
 	welcomeText.TextSize = HeaderTextSize
 	welcomeText.TextStyle.Bold = true
@@ -42,7 +43,7 @@ func (app *Config) homeTab() *fyne.Container {
 	}
 	var chosenSize string
 	if availableSpace < RecommendedSwapSizeBytes {
-		availableSizes, _ := getAvailableSwapSizes()
+		availableSizes, _ := swap.getAvailableSwapSizes()
 		chosenSize = strings.Fields(availableSizes[len(availableSizes)-1])[0]
 	} else {
 		chosenSize = strconv.Itoa(RecommendedSwapSize)
@@ -65,12 +66,12 @@ func (app *Config) homeTab() *fyne.Container {
 		modal := widget.NewModalPopUp(progressGroup, CryoUtils.MainWindow.Canvas())
 		modal.Show()
 		renewSudoAuth()
-		err := UseRecommendedSettings()
+		err := UseRecommendedSettings(swap)
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
 		modal.Hide()
-		app.refreshAllContent()
+		app.refreshAllContent(swap)
 		dialog.ShowInformation(
 			"Success!",
 			"Recommended settings applied!",
@@ -84,12 +85,12 @@ func (app *Config) homeTab() *fyne.Container {
 		modal := widget.NewModalPopUp(progressGroup, CryoUtils.MainWindow.Canvas())
 		modal.Show()
 		renewSudoAuth()
-		err := UseStockSettings()
+		err := UseStockSettings(swap)
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
 		modal.Hide()
-		app.refreshAllContent()
+		app.refreshAllContent(swap)
 		dialog.ShowInformation(
 			"Success!",
 			"Stock settings applied!",
@@ -114,25 +115,25 @@ func (app *Config) homeTab() *fyne.Container {
 }
 
 // Swap tab for all swap-related tasks.
-func (app *Config) swapTab() *fyne.Container {
+func (app *Config) swapTab(swap *Swap) *fyne.Container {
 	app.SwapText = canvas.NewText("Swap File Size: Unknown", Gray)
 	app.SwappinessText = canvas.NewText("Swappiness: Unknown", Gray)
 	// Main content including buttons to resize swap and change swappiness
 	swapResizeButton := widget.NewButton("Resize", func() {
-		swapSizeWindow()
-		app.refreshSwapContent()
+		swapSizeWindow(swap)
+		app.refreshSwapContent(swap)
 	})
 	swappinessChangeButton := widget.NewButton("Change", func() {
-		swappinessWindow()
-		app.refreshSwappinessContent()
+		swappinessWindow(swap)
+		app.refreshSwappinessContent(swap)
 	})
 
 	swapCard := widget.NewCard("Swap File", "Resize the swap file.", swapResizeButton)
 	swappinessCard := widget.NewCard("Swappiness", "Change the swappiness value.", swappinessChangeButton)
 
 	// Swap info gathering
-	app.refreshSwapContent()
-	app.refreshSwappinessContent()
+	app.refreshSwapContent(swap)
+	app.refreshSwappinessContent(swap)
 
 	app.SwapBar = container.NewGridWithColumns(2,
 		container.NewCenter(app.SwapText),
@@ -287,12 +288,11 @@ func (app *Config) vramTab() *fyne.Container {
 	app.refreshVRAMContent()
 
 	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
-			"2. Press and hold the volume up button, press the power button, then release both\n\n" +
-			"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
-	
+		"2. Press and hold the volume up button, press the power button, then release both\n\n" +
+		"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+
 	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
-
 
 	textVBox := container.NewVBox(
 		textHowTo,

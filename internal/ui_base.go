@@ -27,7 +27,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func InitUI() {
+func InitUI(swap *Swap) {
 	// Create a Fyne application
 	screenSizer := NewScreenSizer()
 	screenSizer.UpdateScaleForActiveMonitor()
@@ -38,13 +38,13 @@ func InitUI() {
 	// Show and run the app
 	title := "CryoUtilities " + CurrentVersionNumber
 	CryoUtils.MainWindow = fyneApp.NewWindow(title)
-	CryoUtils.makeUI()
+	CryoUtils.makeUI(swap)
 	CryoUtils.MainWindow.CenterOnScreen()
 	CryoUtils.MainWindow.ShowAndRun()
 }
 
-func (app *Config) makeUI() {
-	app.authUI()
+func (app *Config) makeUI(swap *Swap) {
+	app.authUI(swap)
 
 	// Show a disclaimer that I'm not responsible for damage.
 	dialog.ShowConfirm("Disclaimer",
@@ -69,11 +69,11 @@ func (app *Config) makeUI() {
 	CryoUtils.MainWindow.SetMaster()
 }
 
-func (app *Config) mainUI() {
+func (app *Config) mainUI(swap *Swap) {
 	// Create heading section
 	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("Home", theme.HomeIcon(), app.homeTab()),
-		container.NewTabItemWithIcon("Swap", theme.MailReplyAllIcon(), app.swapTab()),
+		container.NewTabItemWithIcon("Home", theme.HomeIcon(), app.homeTab(swap)),
+		container.NewTabItemWithIcon("Swap", theme.MailReplyAllIcon(), app.swapTab(swap)),
 		container.NewTabItemWithIcon("Memory", theme.ComputerIcon(), app.memoryTab()),
 		container.NewTabItemWithIcon("Storage", theme.StorageIcon(), app.storageTab()),
 		container.NewTabItemWithIcon("VRAM", theme.ViewFullScreenIcon(), app.vramTab()),
@@ -84,7 +84,7 @@ func (app *Config) mainUI() {
 	app.MainWindow.SetContent(finalContent)
 }
 
-func (app *Config) authUI() {
+func (app *Config) authUI(swap *Swap) {
 	// Refactor this, duplicated code.
 	passwordEntry := widget.NewPasswordEntry()
 	passwordEntry.OnSubmitted = func(s string) {
@@ -97,7 +97,7 @@ func (app *Config) authUI() {
 		} else {
 			CryoUtils.InfoLog.Println("Password valid, continuing...")
 			CryoUtils.UserPassword = s
-			app.mainUI()
+			app.mainUI(swap)
 		}
 	}
 	passwordButton := widget.NewButton("Submit", func() {
@@ -110,7 +110,7 @@ func (app *Config) authUI() {
 		} else {
 			CryoUtils.InfoLog.Println("Password valid, continuing...")
 			CryoUtils.UserPassword = passwordEntry.Text
-			app.mainUI()
+			app.mainUI(swap)
 		}
 	})
 	passwordVBox := container.NewVBox(passwordEntry, passwordButton)

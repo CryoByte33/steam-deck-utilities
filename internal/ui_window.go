@@ -330,7 +330,7 @@ func cleanupDataWindow() {
 	w.Show()
 }
 
-func swapSizeWindow() {
+func swapSizeWindow(swap *Swap) {
 	// Create a new window
 	w := CryoUtils.App.NewWindow("Change Swap Size")
 
@@ -339,7 +339,7 @@ func swapSizeWindow() {
 	prompt.TextSize, prompt.TextStyle = 18, fyne.TextStyle{Bold: true}
 
 	// Determine maximum available space for a swap file and construct a list of available sizes based on it
-	availableSwapSizes, err := getAvailableSwapSizes()
+	availableSwapSizes, err := swap.getAvailableSwapSizes()
 	if err != nil {
 		presentErrorInUI(err, w)
 	}
@@ -362,7 +362,7 @@ func swapSizeWindow() {
 			w,
 		)
 		d.Show()
-		err = changeSwapSizeGUI(chosenSize)
+		err = changeSwapSizeGUI(swap, chosenSize)
 		if err != nil {
 			d.Hide()
 			presentErrorInUI(err, w)
@@ -374,7 +374,7 @@ func swapSizeWindow() {
 					"running 'ls -lash /home/swapfile' or 'swapon -s' in Konsole.",
 				CryoUtils.MainWindow,
 			)
-			CryoUtils.refreshSwapContent()
+			CryoUtils.refreshSwapContent(swap)
 			w.Close()
 		}
 	})
@@ -394,36 +394,36 @@ func swapSizeWindow() {
 }
 
 // Note: Having a separate function for this is hacky, but necessary for progress bar functionality
-func changeSwapSizeGUI(size int) error {
+func changeSwapSizeGUI(swap *Swap, size int) error {
 	// Disable swap temporarily
 	renewSudoAuth()
 	CryoUtils.InfoLog.Println("Disabling swap temporarily...")
-	err := disableSwap()
+	err := swap.disableSwap()
 	if err != nil {
 		return err
 	}
 	// Resize the file
 	renewSudoAuth()
-	err = resizeSwapFile(size)
+	err = swap.resizeSwapFile(size)
 	if err != nil {
 		return err
 	}
 	// Set permissions on file
 	renewSudoAuth()
-	err = setSwapPermissions()
+	err = swap.setSwapPermissions()
 	if err != nil {
 		return err
 	}
 	// Initialize new swap file
 	renewSudoAuth()
-	err = initNewSwapFile()
+	err = swap.initNewSwapFile()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func swappinessWindow() {
+func swappinessWindow(swap *Swap) {
 	// Create a new window
 	w := CryoUtils.App.NewWindow("Change Swappiness")
 
@@ -440,7 +440,7 @@ func swappinessWindow() {
 	// Provide a button to submit the choice
 	swappinessChangeButton := widget.NewButton("Change Swappiness", func() {
 		renewSudoAuth()
-		err := ChangeSwappiness(chosenSwappiness)
+		err := swap.ChangeSwappiness(chosenSwappiness)
 		if err != nil {
 			presentErrorInUI(err, w)
 		} else {
@@ -449,7 +449,7 @@ func swappinessWindow() {
 				"Swappiness change completed!",
 				CryoUtils.MainWindow,
 			)
-			CryoUtils.refreshSwappinessContent()
+			CryoUtils.refreshSwappinessContent(swap)
 			w.Close()
 		}
 	})
