@@ -7,6 +7,11 @@ Scripts and utilities to improve performance and manage storage on the Steam Dec
 
 ## Update
 
+### Notes on the Steam Deck OLED
+The latest update resolves the scaling issues on the new OLED Deck, and I figured I should provide an update here:
+1. **This (CU2) is still fully compatible with the new OLED models.**
+2. Performance improvements should be similar (or possibly slightly better) than on the LCD model (thorough testing pending)
+
 ### General Linux Compatibility
 As of the latest update, this _should_ be compatible with most Linux systems, with the following limitations:
 1. This will not operate on swap partitions, only files.
@@ -55,7 +60,7 @@ new features and how they work.
 * Storage Manager
     * Sync shadercache and compatdata to the same location the game is installed
     * Delete shadercache and compatdata for whichever games you select
-      * **NEW** Delete the shadercache and compatdata for all uninstalled games with a single click
+    * Delete the shadercache and compatdata for all uninstalled games with a single click
 * Full CLI mode
 
 Look below for common questions and answers, or go check out my [YouTube Channel](https://www.youtube.com/@cryobyte33)
@@ -66,7 +71,8 @@ for examples on how to use this and what performance you can expect.
 ### Simple
 
 [Download this link](https://raw.githubusercontent.com/CryoByte33/steam-deck-utilities/main/InstallCryoUtilities.desktop)
-to your desktop (right click and save file) on your Steam Deck, then double-click it.
+to your desktop (right click and save file) on your Steam Deck, remove the `.download` from the end of the file name, 
+then double-click it.
 
 This will install the program, create desktop icons, and create menu entries.
 

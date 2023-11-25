@@ -16,24 +16,15 @@
 
 package internal
 
-/*
-#cgo LDFLAGS: -lX11
-#include <X11/Xlib.h>
-*/
-import "C"
 import (
 	"fmt"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"os"
 )
 
 const (
-	smallScreen  = 1280
-	mediumScreen = 1920
-)
-
-const (
-	defaultSteamDeckScreenWidth  = 1280
-	defaultSteamDeckScreenHeight = 800
+	smallScreenSize  = 100
+	mediumScreenSize = 200
 )
 
 const scaleEnvKey = "FYNE_SCALE"
@@ -44,8 +35,8 @@ type ScreenSizer struct {
 }
 
 type screen struct {
-	name          string
-	width, height int
+	name                          string
+	widthPhysical, heightPhysical int
 }
 
 func NewScreenSizer() *ScreenSizer {
@@ -54,40 +45,38 @@ func NewScreenSizer() *ScreenSizer {
 
 func getDefaultScreen() screen {
 
-	display := C.XOpenDisplay(nil)
-	if display == nil {
-		CryoUtils.InfoLog.Println("Can't get info on display")
-		return screen{name: defaultScreenName, width: defaultSteamDeckScreenWidth, height: defaultSteamDeckScreenHeight}
-	}
-	defer C.XCloseDisplay(display)
+	var primaryScreen screen
 
-	displayScreen := C.XDefaultScreenOfDisplay(display)
-	displayScreenName := C.GoString(C.XDisplayString(display))
-	width := int(C.XWidthOfScreen(displayScreen))
-	height := int(C.XHeightOfScreen(displayScreen))
-	if width == 0 || height == 0 {
-		CryoUtils.InfoLog.Println("Default monitor not detected")
-		return screen{name: defaultScreenName, width: defaultSteamDeckScreenWidth, height: defaultSteamDeckScreenHeight}
+	err := glfw.Init()
+	if err != nil {
+		return defaultScreen()
 	}
-	return screen{displayScreenName, width, height}
+	defer glfw.Terminate()
+
+	monitor := glfw.GetPrimaryMonitor()
+	primaryScreen.name = monitor.GetName()
+	primaryScreen.widthPhysical, primaryScreen.heightPhysical = monitor.GetPhysicalSize()
+	return primaryScreen
 }
 
 func (s ScreenSizer) UpdateScaleForActiveMonitor() {
-	defaultScreen := getDefaultScreen()
 
-	if defaultScreen.width <= smallScreen {
+	if s.screen.widthPhysical <= smallScreenSize {
 		s.setScale(0.25)
-	} else if defaultScreen.width > smallScreen && defaultScreen.width <= mediumScreen {
+	} else if s.screen.widthPhysical > smallScreenSize && s.screen.widthPhysical <= mediumScreenSize {
+		s.setScale(0.75)
+	} else if s.screen.widthPhysical > mediumScreenSize {
 		s.setScale(1)
-	} else if defaultScreen.width > mediumScreen {
-		s.setScale(2)
 	}
 }
 
 func (s ScreenSizer) setScale(f float32) {
 	err := os.Setenv(scaleEnvKey, fmt.Sprintf("%f", f))
-	CryoUtils.InfoLog.Printf("Setting scale %f", f)
 	if err != nil {
 		CryoUtils.ErrorLog.Println(err)
 	}
+}
+
+func defaultScreen() screen {
+	return screen{name: defaultScreenName, widthPhysical: 60, heightPhysical: 100}
 }
