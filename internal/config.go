@@ -53,9 +53,10 @@ var TweakList = map[string]Tweak{
 	"defrag":                   {Location: "/sys/kernel/mm/transparent_hugepage/khugepaged/defrag", Recommended: "0", Default: "1"},
 }
 
-// These are supposed to be integers, I can't store them as strings in the map above. idk what to do about these.
+// Non-Tweak Recommendations
 var RecommendedSwapSize = 16
 var RecommendedSwapSizeBytes = int64(RecommendedSwapSize * GigabyteMultiplier)
+var RecommendedVRAM = 4096
 
 //////////////////////
 // Default Settings //
