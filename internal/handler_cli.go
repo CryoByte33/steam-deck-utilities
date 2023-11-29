@@ -94,37 +94,37 @@ func UseRecommendedSettings() error {
 		}
 	}
 	CryoUtils.InfoLog.Println("Swap file resized, changing swappiness...")
-	err = ChangeSwappiness(RecommendedSwappiness)
+	err = ChangeSwappiness(TweakList["swappiness"].Recommended)
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Swappiness changed, enabling HugePages...")
-	err = SetHugePages()
+	err = EnableTweak("hugepages")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("HugePages enabled, setting compaction proactiveness...")
-	err = SetCompactionProactiveness()
+	err = EnableTweak("compaction_proactiveness")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Compaction proactiveness changed, disabling hugePage defragmentation...")
-	err = SetDefrag()
+	err = EnableTweak("hugepage_defrag")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("HugePage defragmentation disabled, setting page lock unfairness...")
-	err = SetPageLockUnfairness()
+	err = EnableTweak("page_lock_unfairness")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Page lock unfairness changed, enabling Shared Memory...")
-	err = SetShMem()
+	err = EnableTweak("shmem_enabled")
 	if err != nil {
 		return err
 	}
@@ -143,38 +143,38 @@ func UseStockSettings() error {
 
 	CryoUtils.InfoLog.Println("Setting swappiness to 100...")
 	// Revert swappiness
-	err = ChangeSwappiness(DefaultSwappiness)
+	err = ChangeSwappiness(TweakList["swappiness"].Default)
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Disabling HugePages...")
 	// Enable HugePages
-	err = RevertHugePages()
+	err = RevertTweak("hugepages")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Reverting compaction proactiveness...")
-	err = RevertCompactionProactiveness()
+	err = RevertTweak("compaction_proactiveness")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Enabling hugePage defragmentation...")
-	err = RevertDefrag()
+	err = RevertTweak("hugepage_defrag")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Reverting page lock unfairness...")
-	err = RevertPageLockUnfairness()
+	err = RevertTweak("page_lock_unfairness")
 	if err != nil {
 		return err
 	}
 
 	CryoUtils.InfoLog.Println("Disabling shared memory in hugepages...")
-	err = RevertShMem()
+	err = RevertTweak("shmem_enabled")
 	if err != nil {
 		CryoUtils.InfoLog.Println("All settings reverted to default!")
 	}

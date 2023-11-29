@@ -177,7 +177,7 @@ func ChangeSwappiness(value string) error {
 		return err
 	}
 
-	if value == DefaultSwappiness {
+	if value == TweakList["swappiness"].Default {
 		CryoUtils.InfoLog.Println("Removing swappiness unit to revert to default behavior...")
 		err = removeUnitFile("swappiness")
 		if err != nil {
