@@ -95,22 +95,23 @@ func main() {
 			Name:        "hugepages",
 			Description: "Enable or disable hugepages. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Enabled",
 			ExecFunc: func(_ context.Context, args []string) error {
-				arg := strings.ToLower(args[0])
-				if arg == "true" || arg == "enable" {
+				switch arg := strings.ToLower(args[0]); arg {
+				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Enabling HugePages...")
 					err := internal.EnableTweak("hugepages")
 					if err != nil {
 						return err
 					}
-				} else if arg == "false" || arg == "disable" {
+				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Disabling HugePages...")
 					err := internal.RevertTweak("hugepages")
 					if err != nil {
 						return err
 					}
-				} else {
+				default:
 					return errors.New("invalid argument provided")
 				}
+
 				return nil
 			},
 		},
@@ -118,22 +119,23 @@ func main() {
 			Name:        "compaction_proactiveness",
 			Description: "Set or revert compaction proactiveness. Accepts 'recommended' or 'stock'.",
 			ExecFunc: func(_ context.Context, args []string) error {
-				arg := strings.ToLower(args[0])
-				if arg == "recommended" {
+				switch arg := strings.ToLower(args[0]); arg {
+				case "recommended":
 					internal.CryoUtils.InfoLog.Println("Setting Compaction Proactiveness...")
 					err := internal.EnableTweak("compaction_proactiveness")
 					if err != nil {
 						return err
 					}
-				} else if arg == "stock" {
+				case "stock":
 					internal.CryoUtils.InfoLog.Println("Reverting Compaction Proactiveness...")
 					err := internal.RevertTweak("compaction_proactiveness")
 					if err != nil {
 						return err
 					}
-				} else {
+				default:
 					return errors.New("invalid argument provided")
 				}
+
 				return nil
 			},
 		},
@@ -141,22 +143,23 @@ func main() {
 			Name:        "defrag",
 			Description: "Enable or disable hugepage defrag. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Disabled",
 			ExecFunc: func(_ context.Context, args []string) error {
-				arg := strings.ToLower(args[0])
-				if arg == "true" || arg == "enable" {
+				switch arg := strings.ToLower(args[0]); arg {
+				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Enabling HugePAge Defrag...")
 					err := internal.RevertTweak("defrag")
 					if err != nil {
 						return err
 					}
-				} else if arg == "false" || arg == "disable" {
+				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Revert Compaction Proactiveness...")
 					err := internal.EnableTweak("defrag")
 					if err != nil {
 						return err
 					}
-				} else {
+				default:
 					return errors.New("invalid argument provided")
 				}
+
 				return nil
 			},
 		},
@@ -164,22 +167,23 @@ func main() {
 			Name:        "page_lock_unfairness",
 			Description: "Set or revert page lock unfairness. Accepts 'recommended' or 'stock'.",
 			ExecFunc: func(_ context.Context, args []string) error {
-				arg := strings.ToLower(args[0])
-				if arg == "recommended" {
+				switch arg := strings.ToLower(args[0]); arg {
+				case "recommended":
 					internal.CryoUtils.InfoLog.Println("Setting Page Lock Unfairness...")
 					err := internal.EnableTweak("page_lock_unfairness")
 					if err != nil {
 						return err
 					}
-				} else if arg == "stock" {
+				case "stock":
 					internal.CryoUtils.InfoLog.Println("Reverting Page Lock Unfairness...")
 					err := internal.RevertTweak("page_lock_unfairness")
 					if err != nil {
 						return err
 					}
-				} else {
+				default:
 					return errors.New("invalid argument provided")
 				}
+
 				return nil
 			},
 		},
@@ -187,22 +191,23 @@ func main() {
 			Name:        "shmem",
 			Description: "Enable or disable shared memory. Accepts 'true', 'false', 'enable' or 'disable'.\n\tRecommended: Enabled",
 			ExecFunc: func(_ context.Context, args []string) error {
-				arg := strings.ToLower(args[0])
-				if arg == "true" || arg == "enable" {
+				switch arg := strings.ToLower(args[0]); arg {
+				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Setting Shared Memory...")
 					err := internal.EnableTweak("shmem")
 					if err != nil {
 						return err
 					}
-				} else if arg == "false" || arg == "disable" {
+				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Reverting Shared Memory...")
 					err := internal.RevertTweak("shmem")
 					if err != nil {
 						return err
 					}
-				} else {
+				default:
 					return errors.New("invalid argument provided")
 				}
+
 				return nil
 			},
 		},

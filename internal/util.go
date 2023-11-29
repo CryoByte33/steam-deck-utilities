@@ -200,17 +200,18 @@ func getListOfDataAllDataLocations() ([]string, error) {
 		return nil, err
 	}
 
-	var possibleLocations []string
+	possibleLocations := make([]string, len(drives)*2)
 	for x := range drives {
 		if drives[x] == SteamDataRoot {
 			possibleLocations = append(possibleLocations, SteamCompatRoot)
 			possibleLocations = append(possibleLocations, SteamShaderRoot)
-		} else {
-			compat := filepath.Join(drives[x], ExternalCompatRoot)
-			shader := filepath.Join(drives[x], ExternalShaderRoot)
-			possibleLocations = append(possibleLocations, compat)
-			possibleLocations = append(possibleLocations, shader)
+			continue
 		}
+
+		compat := filepath.Join(drives[x], ExternalCompatRoot)
+		shader := filepath.Join(drives[x], ExternalShaderRoot)
+		possibleLocations = append(possibleLocations, compat)
+		possibleLocations = append(possibleLocations, shader)
 	}
 
 	return possibleLocations, nil
@@ -251,22 +252,25 @@ func getUnitStatus(param string) (string, error) {
 
 	var output string
 	cmd, err := exec.Command("sudo", "cat", tweak.Location).Output()
-	if err != nil {
+
+  if err != nil {
 		CryoUtils.ErrorLog.Println("Unable to get status of", param, ":", err)
 		return "nil", err
 	}
 	// This is just to get the actual value in units which present as a list.
-	if strings.Contains(string(cmd), "[") {
-		slice := strings.Fields(string(cmd))
-		for x := range slice {
-			if strings.Contains(slice[x], "[") {
-				output = strings.ReplaceAll(slice[x], "[", "")
-				output = strings.ReplaceAll(output, "]", "")
-			}
-		}
-	} else {
-		output = strings.TrimSpace(string(cmd))
+	if !strings.Contains(string(cmd), "[") {
+		return strings.TrimSpace(string(cmd)), nil
 	}
+
+	var output string
+	slice := strings.Fields(string(cmd))
+	for x := range slice {
+		if strings.Contains(slice[x], "[") {
+			output = strings.ReplaceAll(slice[x], "[", "")
+			output = strings.ReplaceAll(output, "]", "")
+		}
+	}
+
 	return output, nil
 }
 
@@ -305,15 +309,39 @@ func setUnitValue(param string, value string) error {
 	echoCmd.Stdout = writer
 	teeCmd.Stdin = reader
 	teeCmd.Stdout = &buf
-	echoCmd.Start()
-	teeCmd.Start()
-	echoCmd.Wait()
-	writer.Close()
-	teeCmd.Wait()
-	reader.Close()
-	io.Copy(os.Stdout, &buf)
 
-	return nil
+	if err := echoCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start command %q: %w",
+			strings.Join(echoCmd.Args, " "),
+			err)
+	}
+	if err := teeCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start command %q: %w",
+			strings.Join(teeCmd.Args, " "),
+			err,
+		)
+	}
+	if err := echoCmd.Wait(); err != nil {
+		return fmt.Errorf("command %q returned an error: %w",
+			strings.Join(echoCmd.Args, " "),
+			err,
+		)
+	}
+	if err := writer.Close(); err != nil {
+		return fmt.Errorf("failed to close writer: %w", err)
+	}
+	if err := teeCmd.Wait(); err != nil {
+		return fmt.Errorf("command %q returned an error: %w",
+			strings.Join(teeCmd.Args, " "),
+			err,
+		)
+	}
+	if err := reader.Close(); err != nil {
+		return fmt.Errorf(": %w", err)
+	}
+
+	_, err := io.Copy(os.Stdout, &buf)
+	return err
 }
 
 func getHumanVRAMSize(size int) string {
@@ -328,7 +356,6 @@ func getHumanVRAMSize(size int) string {
 }
 
 func removeGameData(removeList []string, locations []string) {
-
 	CryoUtils.InfoLog.Println("Removing the following content:")
 	for i := range removeList {
 		for j := range locations {

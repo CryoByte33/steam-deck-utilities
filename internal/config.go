@@ -62,6 +62,9 @@ var RecommendedVRAM = 4096
 // Default Settings //
 //////////////////////
 
+////////////////
+// Unit Files //
+////////////////
 var DefaultSwapFileLocation = "/home/swapfile"
 var DefaultSwapSize = 1
 var DefaultSwapSizeBytes = int64(DefaultSwapSize * GigabyteMultiplier)
@@ -69,7 +72,6 @@ var DefaultSwapSizeBytes = int64(DefaultSwapSize * GigabyteMultiplier)
 var TmpFilesRoot = "/etc/tmpfiles.d"
 
 var TemplateUnitFile = "# Path Mode UID GID Age Argument\nw PARAM - - - - VALUE"
-
 var OldSwappinessUnitFile = "/etc/sysctl.d/zzz-custom-swappiness.conf"
 var NHPTestingFile = "/proc/sys/vm/nr_hugepages"
 
@@ -77,71 +79,83 @@ var NHPTestingFile = "/proc/sys/vm/nr_hugepages"
 // UI Settings //
 /////////////////
 
-// HeaderTextSize Header Text Size
-var HeaderTextSize = float32(32)
+const (
+	// HeaderTextSize Header Text Size
+	HeaderTextSize = float32(32)
 
-// SubHeadingTextSize Subheader Text Size
-var SubHeadingTextSize = float32(16)
+	// SubHeadingTextSize Subheader Text Size
+	SubHeadingTextSize = float32(16)
+)
 
-// Green UI Color
-var Green = color.RGBA{R: 0, G: 155, B: 0, A: 255}
+var (
+	// Green UI Color
+	Green = color.RGBA{R: 0, G: 155, B: 0, A: 255}
 
-// Gray UI Color
-var Gray = color.RGBA{R: 155, G: 155, B: 155, A: 255}
+	// Gray UI Color
+	Gray = color.RGBA{R: 155, G: 155, B: 155, A: 255}
 
-// Red UI Color
-var Red = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	// Red UI Color
+	Red = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 
-// White UI Color
-var White = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	// White UI Color
+	White = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+)
 
 //////////////////////////////////
 // Swap and swappiness settings //
 //////////////////////////////////
 
-// AvailableSwapSizes A list of swap sizes available to choose from, in GB
-var AvailableSwapSizes = []string{"2", "4", "6", "8", "12", "16", "20", "24", "32"}
+const (
+	// GigabyteMultiplier Used to convert gigabytes to bytes
+	GigabyteMultiplier = 1024 * 1024 * 1024
 
-// AvailableSwappinessOptions A list of swappiness options to choose from, valid range 0-200
-var AvailableSwappinessOptions = []string{"0", "1", "10", "25", "50", "60", "75", "90", "100 (Default)", "150", "200"}
+	// SpaceOverhead The amount of space to keep available above the swapfile size, should prevent boot loops
+	SpaceOverhead = 1 * GigabyteMultiplier // 1GB
+)
 
-// SpaceOverhead The amount of space to keep available above the swapfile size, should prevent boot loops
-var SpaceOverhead = 1 * GigabyteMultiplier // 1GB
+var (
+	// AvailableSwapSizes A list of swap sizes available to choose from, in GB
+	AvailableSwapSizes = []string{"2", "4", "6", "8", "12", "16", "20", "24", "32"}
 
-// GigabyteMultiplier Used to convert gigabytes to bytes
-var GigabyteMultiplier = 1024 * 1024 * 1024
+	// AvailableSwappinessOptions A list of swappiness options to choose from, valid range 0-200
+	AvailableSwappinessOptions = []string{"0", "1", "10", "25", "50", "60", "75", "90", "100 (Default)", "150", "200"}
+)
 
 ////////////////////////
 // Game Data settings //
 ////////////////////////
 
-// LibraryVDFLocation The default location of Steam's library VDF
-var LibraryVDFLocation = filepath.Join(HomeDirectory, ".steam/steam/steamapps/libraryfolders.vdf")
+const (
+	// SteamApiUrl The URL for the Steam GetAppList URL
+	SteamApiUrl = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
 
-// MountDirectory The folder where all external devices are mounts
-var MountDirectory = "/run/media"
+	// SteamGameMaxInteger Anything over this number is presumed to be a Proton version
+	// Prevents accidental removal of Proton files
+	SteamGameMaxInteger = 1000000000
+)
 
-// SteamDataRoot The default location where Steam keeps compatdata and shadercache
-var SteamDataRoot = filepath.Join(HomeDirectory, ".local/share/Steam")
+var (
+	// LibraryVDFLocation The default location of Steam's library VDF
+	LibraryVDFLocation = filepath.Join(HomeDirectory, ".steam/steam/steamapps/libraryfolders.vdf")
 
-// SteamCompatRoot Generates the full path of the compatdata folder, on SSD
-var SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")
+	// MountDirectory The folder where all external devices are mounts
+	MountDirectory = "/run/media"
 
-// SteamShaderRoot Generates the full path of the shadercache folder, on SSD
-var SteamShaderRoot = filepath.Join(SteamDataRoot, "steamapps/shadercache")
+	// SteamDataRoot The default location where Steam keeps compatdata and shadercache
+	SteamDataRoot = filepath.Join(HomeDirectory, ".local/share/Steam")
 
-// ExternalDataRoot The location where I'll keep compatdata and shadercache on microSD cards
-var ExternalDataRoot = "cryoutilities_steam_data"
+	// SteamCompatRoot Generates the full path of the compatdata folder, on SSD
+	SteamCompatRoot = filepath.Join(SteamDataRoot, "steamapps/compatdata")
 
-// ExternalCompatRoot Generates the full path of the compatdata folder, on microSD
-var ExternalCompatRoot = filepath.Join(ExternalDataRoot, "compatdata")
+	// SteamShaderRoot Generates the full path of the shadercache folder, on SSD
+	SteamShaderRoot = filepath.Join(SteamDataRoot, "steamapps/shadercache")
 
-// ExternalShaderRoot Generates the full path of the shadercache folder, on microSD
-var ExternalShaderRoot = filepath.Join(ExternalDataRoot, "shadercache")
+	// ExternalDataRoot The location where I'll keep compatdata and shadercache on microSD cards
+	ExternalDataRoot = "cryoutilities_steam_data"
 
-// SteamApiUrl The URL for the Steam GetAppList URL
-var SteamApiUrl = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
+	// ExternalCompatRoot Generates the full path of the compatdata folder, on microSD
+	ExternalCompatRoot = filepath.Join(ExternalDataRoot, "compatdata")
 
-// SteamGameMaxInteger Anything over this number is presumed to be a Proton version
-// Prevents accidental removal of Proton files
-var SteamGameMaxInteger = 1000000000
+	// ExternalShaderRoot Generates the full path of the shadercache folder, on microSD
+	ExternalShaderRoot = filepath.Join(ExternalDataRoot, "shadercache")
+)
