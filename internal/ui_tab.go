@@ -287,10 +287,10 @@ func (app *Config) vramTab() *fyne.Container {
 	// Get VRAM value
 	app.refreshVRAMContent()
 
-	textHowTo := widget.NewLabel("1. Press the button below to reboot to bootloader\n\n" +
-		"2. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+	textHowTo := widget.NewLabel("1. Press the button below to reboot to bootloader.\n\n" +
+		"2. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size.")
 
-	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	textRecommended := widget.NewLabelWithStyle("4GB is the recommended setting for most situations.", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
 
 	textVBox := container.NewVBox(
@@ -301,7 +301,7 @@ func (app *Config) vramTab() *fyne.Container {
 
 	vramCard := widget.NewCard("Minimum VRAM", "How to change the minimum VRAM:", textVBox)
 
-	rebootToBootloaderButton := widget.NewButton("Reboot to bootloader", func() {
+	rebootToBootloaderButton := widget.NewButton("Reboot to bootloader.", func() {
 		if err := rebootToBootloader(); err != nil {
 			rebootFailedWindow()
 		}
