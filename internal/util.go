@@ -252,25 +252,22 @@ func getUnitStatus(param string) (string, error) {
 
 	var output string
 	cmd, err := exec.Command("sudo", "cat", tweak.Location).Output()
-
-  if err != nil {
+	if err != nil {
 		CryoUtils.ErrorLog.Println("Unable to get status of", param, ":", err)
 		return "nil", err
 	}
 	// This is just to get the actual value in units which present as a list.
-	if !strings.Contains(string(cmd), "[") {
-		return strings.TrimSpace(string(cmd)), nil
-	}
-
-	var output string
-	slice := strings.Fields(string(cmd))
-	for x := range slice {
-		if strings.Contains(slice[x], "[") {
-			output = strings.ReplaceAll(slice[x], "[", "")
-			output = strings.ReplaceAll(output, "]", "")
+	if strings.Contains(string(cmd), "[") {
+		slice := strings.Fields(string(cmd))
+		for x := range slice {
+			if strings.Contains(slice[x], "[") {
+				output = strings.ReplaceAll(slice[x], "[", "")
+				output = strings.ReplaceAll(output, "]", "")
+			}
 		}
+	} else {
+		output = strings.TrimSpace(string(cmd))
 	}
-
 	return output, nil
 }
 
