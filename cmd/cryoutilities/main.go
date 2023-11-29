@@ -98,13 +98,13 @@ func main() {
 				switch arg := strings.ToLower(args[0]); arg {
 				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Enabling HugePages...")
-					err := internal.SetHugePages()
+					err := internal.EnableTweak("hugepages")
 					if err != nil {
 						return err
 					}
 				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Disabling HugePages...")
-					err := internal.RevertHugePages()
+					err := internal.RevertTweak("hugepages")
 					if err != nil {
 						return err
 					}
@@ -122,13 +122,13 @@ func main() {
 				switch arg := strings.ToLower(args[0]); arg {
 				case "recommended":
 					internal.CryoUtils.InfoLog.Println("Setting Compaction Proactiveness...")
-					err := internal.SetCompactionProactiveness()
+					err := internal.EnableTweak("compaction_proactiveness")
 					if err != nil {
 						return err
 					}
 				case "stock":
 					internal.CryoUtils.InfoLog.Println("Reverting Compaction Proactiveness...")
-					err := internal.RevertCompactionProactiveness()
+					err := internal.RevertTweak("compaction_proactiveness")
 					if err != nil {
 						return err
 					}
@@ -146,13 +146,13 @@ func main() {
 				switch arg := strings.ToLower(args[0]); arg {
 				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Enabling HugePAge Defrag...")
-					err := internal.RevertDefrag()
+					err := internal.RevertTweak("defrag")
 					if err != nil {
 						return err
 					}
 				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Revert Compaction Proactiveness...")
-					err := internal.SetDefrag()
+					err := internal.EnableTweak("defrag")
 					if err != nil {
 						return err
 					}
@@ -170,13 +170,13 @@ func main() {
 				switch arg := strings.ToLower(args[0]); arg {
 				case "recommended":
 					internal.CryoUtils.InfoLog.Println("Setting Page Lock Unfairness...")
-					err := internal.SetPageLockUnfairness()
+					err := internal.EnableTweak("page_lock_unfairness")
 					if err != nil {
 						return err
 					}
 				case "stock":
 					internal.CryoUtils.InfoLog.Println("Reverting Page Lock Unfairness...")
-					err := internal.RevertPageLockUnfairness()
+					err := internal.RevertTweak("page_lock_unfairness")
 					if err != nil {
 						return err
 					}
@@ -194,13 +194,13 @@ func main() {
 				switch arg := strings.ToLower(args[0]); arg {
 				case "true", "enable":
 					internal.CryoUtils.InfoLog.Println("Setting Shared Memory...")
-					err := internal.SetShMem()
+					err := internal.EnableTweak("shmem")
 					if err != nil {
 						return err
 					}
 				case "false", "disable":
 					internal.CryoUtils.InfoLog.Println("Reverting Shared Memory...")
-					err := internal.RevertShMem()
+					err := internal.RevertTweak("shmem")
 					if err != nil {
 						return err
 					}

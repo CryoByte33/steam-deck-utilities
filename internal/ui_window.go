@@ -470,3 +470,25 @@ func swappinessWindow() {
 	w.RequestFocus()
 	w.Show()
 }
+
+func rebootFailedWindow() {
+	// Create a new window
+	w := CryoUtils.App.NewWindow("Reboot to bootloader failed")
+
+	// Place a prompt near the top of the window
+	prompt := canvas.NewText("Please reboot to bootloader manually:", nil)
+	prompt.TextSize, prompt.TextStyle = 18, fyne.TextStyle{Bold: true}
+
+	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
+		"2. Press and hold the volume up button, press the power button, then release both")
+
+	// Provide a button to close the window
+	closeButton := widget.NewButton("Ok", w.Close)
+
+	swapVBox := container.NewVBox(prompt, textHowTo, closeButton)
+	w.SetContent(swapVBox)
+	w.Resize(fyne.NewSize(400, 150))
+	w.CenterOnScreen()
+	w.RequestFocus()
+	w.Show()
+}

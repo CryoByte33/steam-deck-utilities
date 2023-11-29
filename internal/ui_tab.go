@@ -51,11 +51,11 @@ func (app *Config) homeTab() *fyne.Container {
 
 	actionText := widget.NewLabel(
 		"Swap: " + chosenSize + "GB\n" +
-			"Swappiness: " + RecommendedSwappiness + "\n" +
+			"Swappiness: " + TweakList["swappiness"].Recommended + "\n" +
 			"HugePages: Enabled\n" +
-			"Compaction Proactivenes: " + RecommendedCompactionProactiveness + "\n" +
+			"Compaction Proactivenes: " + TweakList["compaction_proactiveness"].Recommended + "\n" +
 			"HugePage Defragmentation: Disabled\n" +
-			"Page Lock Unfairness: " + RecommendedPageLockUnfairness + "\n" +
+			"Page Lock Unfairness: " + TweakList["page_lock_unfairness"].Recommended + "\n" +
 			"Shared Memory in Huge Pages: Enabled")
 
 	recommendedButton := widget.NewButton("Recommended", func() {
@@ -201,7 +201,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.HugePagesButton = widget.NewButton("Enable HugePages", func() {
 		renewSudoAuth()
-		err := ToggleHugePages()
+		err := ToggleTweak("hugepages")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -210,7 +210,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.ShMemButton = widget.NewButton("Enable Shared Memory in THP", func() {
 		renewSudoAuth()
-		err := ToggleShMem()
+		err := ToggleTweak("shmem")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -219,7 +219,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.CompactionProactivenessButton = widget.NewButton("Set Compaction Proactiveness", func() {
 		renewSudoAuth()
-		err := ToggleCompactionProactiveness()
+		err := ToggleTweak("compaction_proactiveness")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -228,7 +228,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.DefragButton = widget.NewButton("Disable Huge Page Defragmentation", func() {
 		renewSudoAuth()
-		err := ToggleDefrag()
+		err := ToggleTweak("defrag")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -237,7 +237,7 @@ func (app *Config) memoryTab() *fyne.Container {
 
 	CryoUtils.PageLockUnfairnessButton = widget.NewButton("Set Page Lock Unfairness", func() {
 		renewSudoAuth()
-		err := TogglePageLockUnfairness()
+		err := ToggleTweak("page_lock_unfairness")
 		if err != nil {
 			presentErrorInUI(err, CryoUtils.MainWindow)
 		}
@@ -287,11 +287,10 @@ func (app *Config) vramTab() *fyne.Container {
 	// Get VRAM value
 	app.refreshVRAMContent()
 
-	textHowTo := widget.NewLabel("1. Turn off the Steam Deck\n\n" +
-		"2. Press and hold the volume up button, press the power button, then release both\n\n" +
-		"3. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size")
+	textHowTo := widget.NewLabel("1. Press the button below to reboot to bootloader.\n\n" +
+		"2. Navigate to Setup Utility -> Advanced -> UMA Frame Buffer Size.")
 
-	textRecommended := widget.NewLabelWithStyle("4G is the recommended setting for most situations", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	textRecommended := widget.NewLabelWithStyle("4GB is the recommended setting for most situations.", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	textWarning := widget.NewLabel("Please be aware that some games (RDR2) may experience degraded performance.")
 
 	textVBox := container.NewVBox(
@@ -301,6 +300,12 @@ func (app *Config) vramTab() *fyne.Container {
 	)
 
 	vramCard := widget.NewCard("Minimum VRAM", "How to change the minimum VRAM:", textVBox)
+
+	rebootToBootloaderButton := widget.NewButton("Reboot to bootloader.", func() {
+		if err := rebootToBootloader(); err != nil {
+			rebootFailedWindow()
+		}
+	})
 
 	vramBAR := container.NewGridWithColumns(1,
 		container.NewCenter(app.VRAMText))
@@ -312,6 +317,7 @@ func (app *Config) vramTab() *fyne.Container {
 
 	vramVBOX := container.NewVBox(
 		vramCard,
+		rebootToBootloaderButton,
 	)
 	scroll := container.NewScroll(vramVBOX)
 	full := container.NewBorder(topBar, nil, nil, nil, scroll)

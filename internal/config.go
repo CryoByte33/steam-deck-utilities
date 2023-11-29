@@ -23,7 +23,7 @@ import (
 )
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
-var CurrentVersionNumber = "2.1.4"
+var CurrentVersionNumber = "2.2.1"
 
 // Get home Directory
 var HomeDirectory, _ = os.UserHomeDir()
@@ -34,59 +34,46 @@ var InstallDirectory = filepath.Join(HomeDirectory, ".cryo_utilities")
 // LogFilePath Location of the log file
 var LogFilePath = filepath.Join(InstallDirectory, "cryoutilities.log")
 
-// ////////////////////////
-// Recommended Settings //
-// ////////////////////////
+type Tweak struct {
+	Location    string
+	Recommended string
+	Default     string
+}
 
-var (
-	RecommendedSwapSize                = 16
-	RecommendedSwapSizeBytes           = int64(RecommendedSwapSize * GigabyteMultiplier)
-	RecommendedSwappiness              = "1"
-	RecommendedHugePages               = "always"
-	RecommendedCompactionProactiveness = "0"
-	RecommendedHugePageDefrag          = "0"
-	RecommendedPageLockUnfairness      = "1"
-	RecommendedShMem                   = "advise"
-	RecommendedVRAM                    = 4096
-)
+////////////////////
+// Tweak Settings //
+////////////////////
+
+var TweakList = map[string]Tweak{
+	"swappiness":               {Location: "/proc/sys/vm/swappiness", Recommended: "1", Default: "100"},
+	"page_lock_unfairness":     {Location: "/proc/sys/vm/page_lock_unfairness", Recommended: "1", Default: "5"},
+	"compaction_proactiveness": {Location: "/proc/sys/vm/compaction_proactiveness", Recommended: "0", Default: "20"},
+	"hugepages":                {Location: "/sys/kernel/mm/transparent_hugepage/enabled", Recommended: "always", Default: "madvise"},
+	"shmem":                    {Location: "/sys/kernel/mm/transparent_hugepage/shmem_enabled", Recommended: "advise", Default: "never"},
+	"defrag":                   {Location: "/sys/kernel/mm/transparent_hugepage/khugepaged/defrag", Recommended: "0", Default: "1"},
+}
+
+// Non-Tweak Recommendations
+var RecommendedSwapSize = 16
+var RecommendedSwapSizeBytes = int64(RecommendedSwapSize * GigabyteMultiplier)
+var RecommendedVRAM = 4096
 
 //////////////////////
 // Default Settings //
 //////////////////////
 
-const (
-	DefaultSwapFileLocation        = "/home/swapfile"
-	DefaultSwapSize                = 1
-	DefaultSwapSizeBytes           = int64(DefaultSwapSize * GigabyteMultiplier)
-	DefaultSwappiness              = "100"
-	DefaultHugePages               = "madvise"
-	DefaultCompactionProactiveness = "20"
-	DefaultHugePageDefrag          = "1"
-	DefaultPageLockUnfairness      = "5"
-	DefaultShMem                   = "never"
-)
-
 ////////////////
 // Unit Files //
 ////////////////
+var DefaultSwapFileLocation = "/home/swapfile"
+var DefaultSwapSize = 1
+var DefaultSwapSizeBytes = int64(DefaultSwapSize * GigabyteMultiplier)
 
 var TmpFilesRoot = "/etc/tmpfiles.d"
 
 var TemplateUnitFile = "# Path Mode UID GID Age Argument\nw PARAM - - - - VALUE"
-
-var UnitMatrix = map[string]string{
-	"swappiness":               "/proc/sys/vm/swappiness",
-	"page_lock_unfairness":     "/proc/sys/vm/page_lock_unfairness",
-	"compaction_proactiveness": "/proc/sys/vm/compaction_proactiveness",
-	"hugepages":                "/sys/kernel/mm/transparent_hugepage/enabled",
-	"shmem_enabled":            "/sys/kernel/mm/transparent_hugepage/shmem_enabled",
-	"defrag":                   "/sys/kernel/mm/transparent_hugepage/khugepaged/defrag",
-}
-
-const (
-	OldSwappinessUnitFile = "/etc/sysctl.d/zzz-custom-swappiness.conf"
-	NHPTestingFile        = "/proc/sys/vm/nr_hugepages"
-)
+var OldSwappinessUnitFile = "/etc/sysctl.d/zzz-custom-swappiness.conf"
+var NHPTestingFile = "/proc/sys/vm/nr_hugepages"
 
 /////////////////
 // UI Settings //

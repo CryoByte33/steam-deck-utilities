@@ -20,7 +20,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: '^1.20.x'
+          go-version: '^1.21.x'
           check-latest: true
           cache: true
 
@@ -50,6 +50,9 @@ jobs:
         id: download
         with:
           name: ${{env.release_name}}
+
+      - name: Install Hub Package
+        run: sudo apt-get install -y hub
 
       - name: Generate Checksum
         run: md5sum cryo_utilities > cu.md5
@@ -89,6 +92,9 @@ jobs:
         with:
           name: ${{env.release_name}}
 
+      - name: Install Hub Package
+        run: sudo apt-get install -y hub
+
       - name: Delete Previous Develop Release
         uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
@@ -98,8 +104,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Latest Release
+      - name: Create Develop Release
         shell: bash
-        run: hub release create latest -m develop -a cryo_utilities
+        run: hub release create develop -m develop -a cryo_utilities
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
