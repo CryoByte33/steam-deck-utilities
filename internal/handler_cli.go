@@ -124,7 +124,7 @@ func UseRecommendedSettings() error {
 	}
 
 	CryoUtils.InfoLog.Println("Page lock unfairness changed, enabling Shared Memory...")
-	err = EnableTweak("shmem_enabled")
+	err = EnableTweak("shmem")
 	if err != nil {
 		return err
 	}
@@ -174,7 +174,7 @@ func UseStockSettings() error {
 	}
 
 	CryoUtils.InfoLog.Println("Disabling shared memory in hugepages...")
-	err = RevertTweak("shmem_enabled")
+	err = RevertTweak("shmem")
 	if err != nil {
 		CryoUtils.InfoLog.Println("All settings reverted to default!")
 	}

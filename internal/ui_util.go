@@ -259,7 +259,7 @@ func (app *Config) refreshHugePagesContent() {
 
 func (app *Config) refreshShMemContent() {
 	app.InfoLog.Println("Refreshing shmem data...")
-	if isTweakEnabled("shmem_enabled") {
+	if isTweakEnabled("shmem") {
 		app.ShMemButton.Text = "Disable Shared Memory in THP"
 		app.ShMemText.Color = Green
 	} else {

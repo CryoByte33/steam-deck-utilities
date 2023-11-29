@@ -49,7 +49,7 @@ var TweakList = map[string]Tweak{
 	"page_lock_unfairness":     {Location: "/proc/sys/vm/page_lock_unfairness", Recommended: "1", Default: "5"},
 	"compaction_proactiveness": {Location: "/proc/sys/vm/compaction_proactiveness", Recommended: "0", Default: "20"},
 	"hugepages":                {Location: "/sys/kernel/mm/transparent_hugepage/enabled", Recommended: "always", Default: "madvise"},
-	"shmem_enabled":            {Location: "/sys/kernel/mm/transparent_hugepage/shmem_enabled", Recommended: "advise", Default: "never"},
+	"shmem":                    {Location: "/sys/kernel/mm/transparent_hugepage/shmem_enabled", Recommended: "advise", Default: "never"},
 	"defrag":                   {Location: "/sys/kernel/mm/transparent_hugepage/khugepaged/defrag", Recommended: "0", Default: "1"},
 }
 
