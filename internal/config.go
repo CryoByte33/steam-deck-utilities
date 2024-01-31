@@ -23,7 +23,7 @@ import (
 )
 
 // CurrentVersionNumber Version number to build with, Fyne can't support build flags just yet.
-var CurrentVersionNumber = "2.2.1"
+var CurrentVersionNumber = "2.2.2"
 
 // Get home Directory
 var HomeDirectory, _ = os.UserHomeDir()
@@ -55,7 +55,7 @@ var RecommendedVRAM = 4096
 var DefaultSwapFileLocation = "/home/swapfile"
 var DefaultSwapSize = 1
 var DefaultSwapSizeBytes = int64(DefaultSwapSize * GigabyteMultiplier)
-var DefaultSwappiness = "100"
+var DefaultSwappiness = "60"
 var DefaultHugePages = "madvise"
 var DefaultCompactionProactiveness = "20"
 var DefaultHugePageDefrag = "1"
