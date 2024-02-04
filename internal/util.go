@@ -143,8 +143,8 @@ func doesFileExist(path string) bool {
 }
 
 func isSubPath(parent string, sub string) bool {
-	subFolds := filepath.SplitList(sub)
-	for i, fold := range filepath.SplitList(parent) {
+	subFolds := strings.Split(sub, string(os.PathSeparator))
+	for i, fold := range strings.Split(parent, string(os.PathSeparator)) {
 		if subFolds[i] != fold {
 			return false
 		}
